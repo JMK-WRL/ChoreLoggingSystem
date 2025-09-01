@@ -64,13 +64,13 @@ Namespace Services
                     Using reader As SqlDataReader = command.ExecuteReader()
                         While reader.Read()
                             shifts.Add(New Shift With {
-                                .ShiftID = reader.GetInt32("ShiftID"),
-                                .ShiftName = reader.GetString("ShiftName"),
-                                .StartTime = reader.GetTimeSpan("StartTime"),
-                                .EndTime = reader.GetTimeSpan("EndTime"),
-                                .IsActive = reader.GetBoolean("IsActive"),
-                                .CreatedDate = reader.GetDateTime("CreatedDate")
-                            })
+                        .ShiftID = reader.GetInt32("ShiftID"),
+                        .ShiftName = reader.GetString("ShiftName"),
+                        .StartTime = TimeSpan.Parse(reader("StartTime").ToString()),
+                        .EndTime = TimeSpan.Parse(reader("EndTime").ToString()),
+                        .IsActive = reader.GetBoolean("IsActive"),
+                        .CreatedDate = reader.GetDateTime("CreatedDate")
+                    })
                         End While
                     End Using
                 End Using

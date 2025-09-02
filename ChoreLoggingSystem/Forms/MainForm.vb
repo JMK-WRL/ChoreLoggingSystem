@@ -271,7 +271,7 @@ Namespace Forms
             buttonReset.Name = "buttonReset"
             buttonReset.Size = New Size(100, 30)
             buttonReset.TabIndex = 12
-            buttonReset.Text = "Dashboard"
+            buttonReset.Text = "Reset"
             buttonReset.UseVisualStyleBackColor = True
             ' 
             ' buttonDashboard

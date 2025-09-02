@@ -24,9 +24,9 @@ Namespace Forms
 
                 Dim shifts As New List(Of Shift) From {New Shift With {.ShiftID = -1, .ShiftName = "All Shifts"}}
                 shifts.AddRange(_databaseService.GetShifts())
-                comboBoxFilterBranch.DataSource = shifts
-                comboBoxFilterBranch.DisplayMember = "ShiftName"
-                comboBoxFilterBranch.ValueMember = "ShiftID"
+                comboBoxFilterShift.DataSource = shifts
+                comboBoxFilterShift.DisplayMember = "ShiftName"
+                comboBoxFilterShift.ValueMember = "ShiftID"
 
                 ' Set default date range (last 30 days)
                 dateTimePickerFrom.Value = DateTime.Now.AddDays(-30)
@@ -140,7 +140,7 @@ Namespace Forms
             labelFilterBranch = New Label()
             comboBoxFilterBranch = New ComboBox()
             labelFilterShift = New Label()
-            comboBoxFilter = New ComboBox()
+            comboBoxFilterShift = New ComboBox()
             labelFilterFrom = New Label()
             dateTimePickerFrom = New DateTimePicker()
             labelFilterTo = New Label()
@@ -201,14 +201,14 @@ Namespace Forms
             labelFilterShift.TabIndex = 4
             labelFilterShift.Text = "Shift:"
             ' 
-            ' comboBoxFilter
+            ' comboBoxFilterShift
             ' 
-            comboBoxFilter.DropDownStyle = ComboBoxStyle.DropDownList
-            comboBoxFilter.FormattingEnabled = True
-            comboBoxFilter.Location = New Point(320, 100)
-            comboBoxFilter.Name = "comboBoxFilter"
-            comboBoxFilter.Size = New Size(120, 23)
-            comboBoxFilter.TabIndex = 5
+            comboBoxFilterShift.DropDownStyle = ComboBoxStyle.DropDownList
+            comboBoxFilterShift.FormattingEnabled = True
+            comboBoxFilterShift.Location = New Point(320, 100)
+            comboBoxFilterShift.Name = "comboBoxFilterShift"
+            comboBoxFilterShift.Size = New Size(120, 23)
+            comboBoxFilterShift.TabIndex = 5
             ' 
             ' labelFilterFrom
             ' 
@@ -321,7 +321,7 @@ Namespace Forms
             Controls.Add(labelFilterTo)
             Controls.Add(dateTimePickerFrom)
             Controls.Add(labelFilterFrom)
-            Controls.Add(comboBoxFilter)
+            Controls.Add(comboBoxFilterShift)
             Controls.Add(labelFilterShift)
             Controls.Add(comboBoxFilterBranch)
             Controls.Add(labelFilterBranch)
@@ -341,7 +341,7 @@ Namespace Forms
         Friend WithEvents labelFilterBranch As Label
         Friend WithEvents comboBoxFilterBranch As ComboBox
         Friend WithEvents labelFilterShift As Label
-        Friend WithEvents comboBoxFilter As ComboBox
+        Friend WithEvents comboBoxFilterShift As ComboBox
         Friend WithEvents labelFilterFrom As Label
         Friend WithEvents dateTimePickerFrom As DateTimePicker
         Friend WithEvents labelFilterTo As Label

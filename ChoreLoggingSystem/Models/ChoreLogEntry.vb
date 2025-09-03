@@ -1,7 +1,8 @@
 ﻿Namespace Models
     Public Class ChoreLogEntry
         Public Property LogID As Integer
-        Public Property StaffInitials As String
+        Public Property UserID As String           ' Changed from StaffInitials
+        Public Property AuthenticatedStaffID As Integer
         Public Property BranchID As Integer
         Public Property BranchName As String
         Public Property ShiftID As Integer

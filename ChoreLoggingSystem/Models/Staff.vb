@@ -1,7 +1,7 @@
 ﻿Namespace Models
     Public Class Staff
         Public Property StaffID As Integer
-        Public Property Initials As String
+        Public Property UserID As String
         Public Property FullName As String
         Public Property EmployeeID As String
         Public Property PIN As String
@@ -11,7 +11,7 @@
         Public Property BranchID As Integer?
 
         Public Overrides Function ToString() As String
-            Return $"{FullName} ({Initials})"
+            Return $"{FullName} ({UserID})"
         End Function
     End Class
 End Namespace

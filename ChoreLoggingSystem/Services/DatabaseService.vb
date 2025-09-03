@@ -109,24 +109,26 @@ Namespace Services
         End Function
 
         ' Log completed tasks
-        Public Function LogCompletedTasks(staffInitials As String, branchId As Integer, shiftId As Integer,
-                                        completedTaskIds As List(Of Integer), Optional notes As String = "") As Boolean
+        Public Function LogCompletedTasks(userID As String, branchId As Integer, shiftId As Integer,
+                                completedTaskIds As List(Of Integer), Optional notes As String = "",
+                                Optional authenticatedStaffId As Integer = 0) As Boolean
             Using connection As New SqlConnection(_connectionString)
                 connection.Open()
                 Using transaction As SqlTransaction = connection.BeginTransaction()
                     Try
                         For Each taskId As Integer In completedTaskIds
-                            Dim query As String = "INSERT INTO ChoreLog (StaffInitials, BranchID, ShiftID, TaskID, CompletedDateTime, Status, Notes) " &
-                                                "VALUES (@StaffInitials, @BranchID, @ShiftID, @TaskID, @CompletedDateTime, @Status, @Notes)"
+                            Dim query As String = "INSERT INTO ChoreLog (UserID, BranchID, ShiftID, TaskID, CompletedDateTime, Status, Notes, AuthenticatedStaffID) " &
+                                        "VALUES (@UserID, @BranchID, @ShiftID, @TaskID, @CompletedDateTime, @Status, @Notes, @AuthenticatedStaffID)"
 
                             Using command As New SqlCommand(query, connection, transaction)
-                                command.Parameters.AddWithValue("@StaffInitials", staffInitials)
+                                command.Parameters.AddWithValue("@UserID", userID)
                                 command.Parameters.AddWithValue("@BranchID", branchId)
                                 command.Parameters.AddWithValue("@ShiftID", shiftId)
                                 command.Parameters.AddWithValue("@TaskID", taskId)
                                 command.Parameters.AddWithValue("@CompletedDateTime", DateTime.Now)
                                 command.Parameters.AddWithValue("@Status", "Completed")
                                 command.Parameters.AddWithValue("@Notes", If(notes, String.Empty))
+                                command.Parameters.AddWithValue("@AuthenticatedStaffID", authenticatedStaffId)
 
                                 command.ExecuteNonQuery()
                             End Using
@@ -195,7 +197,7 @@ Namespace Services
                         While reader.Read()
                             entries.Add(New ChoreLogEntry With {
                                 .LogID = reader.GetInt32("LogID"),
-                                .StaffInitials = reader.GetString("StaffInitials"),
+                                .UserID = reader.GetString("UserID"),
                                 .BranchID = reader.GetInt32("BranchID"),
                                 .BranchName = reader.GetString("BranchName"),
                                 .ShiftID = reader.GetInt32("ShiftID"),

@@ -307,35 +307,56 @@ Namespace Forms
 
         Friend WithEvents tabControlManager As TabControl
         Friend WithEvents panelTaskLogging As TabPage
-        Friend WithEvents TabPage2 As TabPage
+        Friend WithEvents panelReports As TabPage
 
         Private Sub InitializeComponent()
             tabControlManager = New TabControl()
             panelTaskLogging = New TabPage()
-            TabPage2 = New TabPage()
             Panel1 = New Panel()
-            labelBranch = New Label()
-            comboBoxTaskBranch = New ComboBox()
-            labelShift = New Label()
-            comboBoxTaskShift = New ComboBox()
-            labelUserID = New Label()
-            textBoxUserID = New TextBox()
-            labelStaffName = New Label()
-            textBoxStaffName = New TextBox()
-            labelTasks = New Label()
-            checkListBoxTasks = New CheckedListBox()
-            labelTaskNotes = New Label()
-            textBoxTaskNotes = New TextBox()
             buttonSubmitTasks = New Button()
+            textBoxTaskNotes = New TextBox()
+            labelTaskNotes = New Label()
+            checkListBoxTasks = New CheckedListBox()
+            labelTasks = New Label()
+            textBoxStaffName = New TextBox()
+            labelStaffName = New Label()
+            textBoxUserID = New TextBox()
+            labelUserID = New Label()
+            comboBoxTaskShift = New ComboBox()
+            labelShift = New Label()
+            comboBoxTaskBranch = New ComboBox()
+            labelBranch = New Label()
+            panelReports = New TabPage()
+            Panel2 = New Panel()
+            Label1 = New Label()
+            ComboBoxFilterBranch = New ComboBox()
+            Label2 = New Label()
+            ComboBoxFilterShift = New ComboBox()
+            Label3 = New Label()
+            DateTimePickerFrom = New DateTimePicker()
+            Label4 = New Label()
+            DateTimePickerTo = New DateTimePicker()
+            Label5 = New Label()
+            TextBoxFilterStaff = New TextBox()
+            buttonApplyFilters = New Button()
+            dataGridViewResults = New DataGridView()
+            labelRecordsCount = New Label()
+            labelTotalTasks = New Label()
+            labelUniqueStaff = New Label()
+            labelBrancesActive = New Label()
+            labelMostActiveBranch = New Label()
             tabControlManager.SuspendLayout()
             panelTaskLogging.SuspendLayout()
             Panel1.SuspendLayout()
+            panelReports.SuspendLayout()
+            Panel2.SuspendLayout()
+            CType(dataGridViewResults, ComponentModel.ISupportInitialize).BeginInit()
             SuspendLayout()
             ' 
             ' tabControlManager
             ' 
             tabControlManager.Controls.Add(panelTaskLogging)
-            tabControlManager.Controls.Add(TabPage2)
+            tabControlManager.Controls.Add(panelReports)
             tabControlManager.Location = New Point(10, 10)
             tabControlManager.Name = "tabControlManager"
             tabControlManager.SelectedIndex = 0
@@ -352,16 +373,6 @@ Namespace Forms
             panelTaskLogging.TabIndex = 0
             panelTaskLogging.Text = "Task Logging"
             panelTaskLogging.UseVisualStyleBackColor = True
-            ' 
-            ' TabPage2
-            ' 
-            TabPage2.Location = New Point(4, 24)
-            TabPage2.Name = "TabPage2"
-            TabPage2.Padding = New Padding(3)
-            TabPage2.Size = New Size(952, 552)
-            TabPage2.TabIndex = 1
-            TabPage2.Text = "TabPage2"
-            TabPage2.UseVisualStyleBackColor = True
             ' 
             ' Panel1
             ' 
@@ -383,55 +394,56 @@ Namespace Forms
             Panel1.Size = New Size(910, 530)
             Panel1.TabIndex = 0
             ' 
-            ' labelBranch
+            ' buttonSubmitTasks
             ' 
-            labelBranch.AutoSize = True
-            labelBranch.Location = New Point(20, 20)
-            labelBranch.Name = "labelBranch"
-            labelBranch.Size = New Size(47, 15)
-            labelBranch.TabIndex = 0
-            labelBranch.Text = "Branch:"
+            buttonSubmitTasks.Location = New Point(120, 420)
+            buttonSubmitTasks.Name = "buttonSubmitTasks"
+            buttonSubmitTasks.Size = New Size(120, 40)
+            buttonSubmitTasks.TabIndex = 12
+            buttonSubmitTasks.Text = "Submit"
+            buttonSubmitTasks.UseVisualStyleBackColor = True
             ' 
-            ' comboBoxTaskBranch
+            ' textBoxTaskNotes
             ' 
-            comboBoxTaskBranch.FormattingEnabled = True
-            comboBoxTaskBranch.Location = New Point(120, 15)
-            comboBoxTaskBranch.Name = "comboBoxTaskBranch"
-            comboBoxTaskBranch.Size = New Size(250, 23)
-            comboBoxTaskBranch.TabIndex = 1
+            textBoxTaskNotes.Location = New Point(120, 345)
+            textBoxTaskNotes.Multiline = True
+            textBoxTaskNotes.Name = "textBoxTaskNotes"
+            textBoxTaskNotes.Size = New Size(500, 60)
+            textBoxTaskNotes.TabIndex = 11
             ' 
-            ' labelShift
+            ' labelTaskNotes
             ' 
-            labelShift.AutoSize = True
-            labelShift.Location = New Point(20, 60)
-            labelShift.Name = "labelShift"
-            labelShift.Size = New Size(34, 15)
-            labelShift.TabIndex = 2
-            labelShift.Text = "Shift:"
+            labelTaskNotes.AutoSize = True
+            labelTaskNotes.Location = New Point(20, 350)
+            labelTaskNotes.Name = "labelTaskNotes"
+            labelTaskNotes.Size = New Size(67, 15)
+            labelTaskNotes.TabIndex = 10
+            labelTaskNotes.Text = "Task Notes:"
             ' 
-            ' comboBoxTaskShift
+            ' checkListBoxTasks
             ' 
-            comboBoxTaskShift.FormattingEnabled = True
-            comboBoxTaskShift.Location = New Point(120, 55)
-            comboBoxTaskShift.Name = "comboBoxTaskShift"
-            comboBoxTaskShift.Size = New Size(250, 23)
-            comboBoxTaskShift.TabIndex = 3
+            checkListBoxTasks.FormattingEnabled = True
+            checkListBoxTasks.Location = New Point(120, 180)
+            checkListBoxTasks.Name = "checkListBoxTasks"
+            checkListBoxTasks.Size = New Size(350, 148)
+            checkListBoxTasks.TabIndex = 9
             ' 
-            ' labelUserID
+            ' labelTasks
             ' 
-            labelUserID.AutoSize = True
-            labelUserID.Location = New Point(20, 100)
-            labelUserID.Name = "labelUserID"
-            labelUserID.Size = New Size(47, 15)
-            labelUserID.TabIndex = 4
-            labelUserID.Text = "User ID:"
+            labelTasks.AutoSize = True
+            labelTasks.Location = New Point(20, 180)
+            labelTasks.Name = "labelTasks"
+            labelTasks.Size = New Size(38, 15)
+            labelTasks.TabIndex = 8
+            labelTasks.Text = "Tasks:"
             ' 
-            ' textBoxUserID
+            ' textBoxStaffName
             ' 
-            textBoxUserID.Location = New Point(120, 95)
-            textBoxUserID.Name = "textBoxUserID"
-            textBoxUserID.Size = New Size(250, 23)
-            textBoxUserID.TabIndex = 5
+            textBoxStaffName.Location = New Point(120, 135)
+            textBoxStaffName.Name = "textBoxStaffName"
+            textBoxStaffName.ReadOnly = True
+            textBoxStaffName.Size = New Size(250, 23)
+            textBoxStaffName.TabIndex = 7
             ' 
             ' labelStaffName
             ' 
@@ -442,56 +454,235 @@ Namespace Forms
             labelStaffName.TabIndex = 6
             labelStaffName.Text = "Staff Name:"
             ' 
-            ' textBoxStaffName
+            ' textBoxUserID
             ' 
-            textBoxStaffName.Location = New Point(120, 135)
-            textBoxStaffName.Name = "textBoxStaffName"
-            textBoxStaffName.ReadOnly = True
-            textBoxStaffName.Size = New Size(250, 23)
-            textBoxStaffName.TabIndex = 7
+            textBoxUserID.Location = New Point(120, 95)
+            textBoxUserID.Name = "textBoxUserID"
+            textBoxUserID.Size = New Size(250, 23)
+            textBoxUserID.TabIndex = 5
             ' 
-            ' labelTasks
+            ' labelUserID
             ' 
-            labelTasks.AutoSize = True
-            labelTasks.Location = New Point(20, 180)
-            labelTasks.Name = "labelTasks"
-            labelTasks.Size = New Size(37, 15)
-            labelTasks.TabIndex = 8
-            labelTasks.Text = "Tasks:"
+            labelUserID.AutoSize = True
+            labelUserID.Location = New Point(20, 100)
+            labelUserID.Name = "labelUserID"
+            labelUserID.Size = New Size(47, 15)
+            labelUserID.TabIndex = 4
+            labelUserID.Text = "User ID:"
             ' 
-            ' checkListBoxTasks
+            ' comboBoxTaskShift
             ' 
-            checkListBoxTasks.FormattingEnabled = True
-            checkListBoxTasks.Location = New Point(120, 180)
-            checkListBoxTasks.Name = "checkListBoxTasks"
-            checkListBoxTasks.Size = New Size(350, 148)
-            checkListBoxTasks.TabIndex = 9
+            comboBoxTaskShift.FormattingEnabled = True
+            comboBoxTaskShift.Location = New Point(120, 55)
+            comboBoxTaskShift.Name = "comboBoxTaskShift"
+            comboBoxTaskShift.Size = New Size(250, 23)
+            comboBoxTaskShift.TabIndex = 3
             ' 
-            ' labelTaskNotes
+            ' labelShift
             ' 
-            labelTaskNotes.AutoSize = True
-            labelTaskNotes.Location = New Point(20, 350)
-            labelTaskNotes.Name = "labelTaskNotes"
-            labelTaskNotes.Size = New Size(66, 15)
-            labelTaskNotes.TabIndex = 10
-            labelTaskNotes.Text = "Task Notes:"
+            labelShift.AutoSize = True
+            labelShift.Location = New Point(20, 60)
+            labelShift.Name = "labelShift"
+            labelShift.Size = New Size(34, 15)
+            labelShift.TabIndex = 2
+            labelShift.Text = "Shift:"
             ' 
-            ' textBoxTaskNotes
+            ' comboBoxTaskBranch
             ' 
-            textBoxTaskNotes.Location = New Point(120, 345)
-            textBoxTaskNotes.Multiline = True
-            textBoxTaskNotes.Name = "textBoxTaskNotes"
-            textBoxTaskNotes.Size = New Size(500, 60)
-            textBoxTaskNotes.TabIndex = 11
+            comboBoxTaskBranch.FormattingEnabled = True
+            comboBoxTaskBranch.Location = New Point(120, 15)
+            comboBoxTaskBranch.Name = "comboBoxTaskBranch"
+            comboBoxTaskBranch.Size = New Size(250, 23)
+            comboBoxTaskBranch.TabIndex = 1
             ' 
-            ' buttonSubmitTasks
+            ' labelBranch
             ' 
-            buttonSubmitTasks.Location = New Point(120, 420)
-            buttonSubmitTasks.Name = "buttonSubmitTasks"
-            buttonSubmitTasks.Size = New Size(120, 40)
-            buttonSubmitTasks.TabIndex = 12
-            buttonSubmitTasks.Text = "Submit"
-            buttonSubmitTasks.UseVisualStyleBackColor = True
+            labelBranch.AutoSize = True
+            labelBranch.Location = New Point(20, 20)
+            labelBranch.Name = "labelBranch"
+            labelBranch.Size = New Size(47, 15)
+            labelBranch.TabIndex = 0
+            labelBranch.Text = "Branch:"
+            ' 
+            ' panelReports
+            ' 
+            panelReports.Controls.Add(Panel2)
+            panelReports.Location = New Point(4, 24)
+            panelReports.Name = "panelReports"
+            panelReports.Padding = New Padding(3)
+            panelReports.Size = New Size(952, 552)
+            panelReports.TabIndex = 1
+            panelReports.Text = "Reports & Analytics"
+            panelReports.UseVisualStyleBackColor = True
+            ' 
+            ' Panel2
+            ' 
+            Panel2.Controls.Add(labelMostActiveBranch)
+            Panel2.Controls.Add(labelBrancesActive)
+            Panel2.Controls.Add(labelUniqueStaff)
+            Panel2.Controls.Add(labelTotalTasks)
+            Panel2.Controls.Add(labelRecordsCount)
+            Panel2.Controls.Add(dataGridViewResults)
+            Panel2.Controls.Add(buttonApplyFilters)
+            Panel2.Controls.Add(TextBoxFilterStaff)
+            Panel2.Controls.Add(Label5)
+            Panel2.Controls.Add(DateTimePickerTo)
+            Panel2.Controls.Add(Label4)
+            Panel2.Controls.Add(DateTimePickerFrom)
+            Panel2.Controls.Add(Label3)
+            Panel2.Controls.Add(ComboBoxFilterShift)
+            Panel2.Controls.Add(Label2)
+            Panel2.Controls.Add(ComboBoxFilterBranch)
+            Panel2.Controls.Add(Label1)
+            Panel2.Location = New Point(10, 10)
+            Panel2.Name = "Panel2"
+            Panel2.Size = New Size(910, 530)
+            Panel2.TabIndex = 0
+            ' 
+            ' Label1
+            ' 
+            Label1.AutoSize = True
+            Label1.Location = New Point(20, 20)
+            Label1.Name = "Label1"
+            Label1.Size = New Size(47, 15)
+            Label1.TabIndex = 0
+            Label1.Text = "Branch:"
+            AddHandler Label1.Click, New EventHandler(Me.Label1_Click)
+            ' 
+            ' ComboBoxFilterBranch
+            ' 
+            ComboBoxFilterBranch.FormattingEnabled = True
+            ComboBoxFilterBranch.Location = New Point(120, 15)
+            ComboBoxFilterBranch.Name = "ComboBoxFilterBranch"
+            ComboBoxFilterBranch.Size = New Size(250, 23)
+            ComboBoxFilterBranch.TabIndex = 1
+            ' 
+            ' Label2
+            ' 
+            Label2.AutoSize = True
+            Label2.Location = New Point(400, 20)
+            Label2.Name = "Label2"
+            Label2.Size = New Size(34, 15)
+            Label2.TabIndex = 2
+            Label2.Text = "Shift:"
+            ' 
+            ' ComboBoxFilterShift
+            ' 
+            ComboBoxFilterShift.FormattingEnabled = True
+            ComboBoxFilterShift.Location = New Point(480, 15)
+            ComboBoxFilterShift.Name = "ComboBoxFilterShift"
+            ComboBoxFilterShift.Size = New Size(250, 23)
+            ComboBoxFilterShift.TabIndex = 3
+            ' 
+            ' Label3
+            ' 
+            Label3.AutoSize = True
+            Label3.Location = New Point(20, 60)
+            Label3.Name = "Label3"
+            Label3.Size = New Size(38, 15)
+            Label3.TabIndex = 4
+            Label3.Text = "From:"
+            ' 
+            ' DateTimePickerFrom
+            ' 
+            DateTimePickerFrom.Location = New Point(120, 55)
+            DateTimePickerFrom.Name = "DateTimePickerFrom"
+            DateTimePickerFrom.Size = New Size(250, 23)
+            DateTimePickerFrom.TabIndex = 5
+            ' 
+            ' Label4
+            ' 
+            Label4.AutoSize = True
+            Label4.Location = New Point(400, 60)
+            Label4.Name = "Label4"
+            Label4.Size = New Size(23, 15)
+            Label4.TabIndex = 6
+            Label4.Text = "To:"
+            ' 
+            ' DateTimePickerTo
+            ' 
+            DateTimePickerTo.Location = New Point(480, 55)
+            DateTimePickerTo.Name = "DateTimePickerTo"
+            DateTimePickerTo.Size = New Size(250, 23)
+            DateTimePickerTo.TabIndex = 7
+            ' 
+            ' Label5
+            ' 
+            Label5.AutoSize = True
+            Label5.Location = New Point(20, 100)
+            Label5.Name = "Label5"
+            Label5.Size = New Size(31, 15)
+            Label5.TabIndex = 8
+            Label5.Text = "Staff"
+            ' 
+            ' TextBoxFilterStaff
+            ' 
+            TextBoxFilterStaff.Location = New Point(120, 95)
+            TextBoxFilterStaff.Name = "TextBoxFilterStaff"
+            TextBoxFilterStaff.Size = New Size(250, 23)
+            TextBoxFilterStaff.TabIndex = 9
+            ' 
+            ' buttonApplyFilters
+            ' 
+            buttonApplyFilters.BackColor = SystemColors.AppWorkspace
+            buttonApplyFilters.Location = New Point(400, 95)
+            buttonApplyFilters.Name = "buttonApplyFilters"
+            buttonApplyFilters.Size = New Size(150, 35)
+            buttonApplyFilters.TabIndex = 10
+            buttonApplyFilters.Text = "Apply Filters"
+            buttonApplyFilters.UseVisualStyleBackColor = False
+            ' 
+            ' dataGridViewResults
+            ' 
+            dataGridViewResults.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+            dataGridViewResults.Location = New Point(20, 140)
+            dataGridViewResults.Name = "dataGridViewResults"
+            dataGridViewResults.Size = New Size(870, 300)
+            dataGridViewResults.TabIndex = 11
+            ' 
+            ' labelRecordsCount
+            ' 
+            labelRecordsCount.AutoSize = True
+            labelRecordsCount.Location = New Point(20, 450)
+            labelRecordsCount.Name = "labelRecordsCount"
+            labelRecordsCount.Size = New Size(98, 15)
+            labelRecordsCount.TabIndex = 12
+            labelRecordsCount.Text = "Records Found: 0"
+            ' 
+            ' labelTotalTasks
+            ' 
+            labelTotalTasks.AutoSize = True
+            labelTotalTasks.Location = New Point(200, 450)
+            labelTotalTasks.Name = "labelTotalTasks"
+            labelTotalTasks.Size = New Size(0, 15)
+            labelTotalTasks.TabIndex = 13
+            ' 
+            ' labelUniqueStaff
+            ' 
+            labelUniqueStaff.AutoSize = True
+            labelUniqueStaff.Location = New Point(400, 450)
+            labelUniqueStaff.Name = "labelUniqueStaff"
+            labelUniqueStaff.Size = New Size(41, 15)
+            labelUniqueStaff.TabIndex = 15
+            labelUniqueStaff.Text = "Label7"
+            ' 
+            ' labelBrancesActive
+            ' 
+            labelBrancesActive.AutoSize = True
+            labelBrancesActive.Location = New Point(600, 450)
+            labelBrancesActive.Name = "labelBrancesActive"
+            labelBrancesActive.Size = New Size(41, 15)
+            labelBrancesActive.TabIndex = 16
+            labelBrancesActive.Text = "Label7"
+            ' 
+            ' labelMostActiveBranch
+            ' 
+            labelMostActiveBranch.AutoSize = True
+            labelMostActiveBranch.Location = New Point(20, 480)
+            labelMostActiveBranch.Name = "labelMostActiveBranch"
+            labelMostActiveBranch.Size = New Size(41, 15)
+            labelMostActiveBranch.TabIndex = 17
+            labelMostActiveBranch.Text = "Label7"
             ' 
             ' ManagerDashboardForm
             ' 
@@ -504,6 +695,10 @@ Namespace Forms
             panelTaskLogging.ResumeLayout(False)
             Panel1.ResumeLayout(False)
             Panel1.PerformLayout()
+            panelReports.ResumeLayout(False)
+            Panel2.ResumeLayout(False)
+            Panel2.PerformLayout()
+            CType(dataGridViewResults, ComponentModel.ISupportInitialize).EndInit()
             ResumeLayout(False)
 
         End Sub
@@ -522,5 +717,28 @@ Namespace Forms
         Friend WithEvents textBoxTaskNotes As TextBox
         Friend WithEvents labelTaskNotes As Label
         Friend WithEvents buttonSubmitTasks As Button
+        Friend WithEvents Panel2 As Panel
+        Friend WithEvents Label1 As Label
+
+        Private Sub Label1_Click(sender As Object, e As EventArgs) Handles Label1.Click
+
+        End Sub
+
+        Friend WithEvents ComboBoxFilterBranch As ComboBox
+        Friend WithEvents DateTimePickerFrom As DateTimePicker
+        Friend WithEvents Label3 As Label
+        Friend WithEvents ComboBoxFilterShift As ComboBox
+        Friend WithEvents Label2 As Label
+        Friend WithEvents buttonApplyFilters As Button
+        Friend WithEvents TextBoxFilterStaff As TextBox
+        Friend WithEvents Label5 As Label
+        Friend WithEvents DateTimePickerTo As DateTimePicker
+        Friend WithEvents Label4 As Label
+        Friend WithEvents dataGridViewResults As DataGridView
+        Friend WithEvents labelTotalTasks As Label
+        Friend WithEvents labelRecordsCount As Label
+        Friend WithEvents labelBrancesActive As Label
+        Friend WithEvents labelUniqueStaff As Label
+        Friend WithEvents labelMostActiveBranch As Label
     End Class
 End Namespace

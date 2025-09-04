@@ -547,7 +547,7 @@ Namespace Forms
             Label1.Size = New Size(47, 15)
             Label1.TabIndex = 0
             Label1.Text = "Branch:"
-            AddHandler Label1.Click, New EventHandler(Me.Label1_Click)
+            AddHandler buttonSubmitTasks.Click, AddressOf SomeMethod ' ✅ Correct
             ' 
             ' ComboBoxFilterBranch
             ' 

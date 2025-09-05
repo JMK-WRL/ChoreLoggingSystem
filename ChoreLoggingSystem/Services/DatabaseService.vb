@@ -108,6 +108,35 @@ Namespace Services
             Return tasks
         End Function
 
+        ' Get staff by UserID - ADDED THIS MISSING METHOD
+        Public Function GetStaffByUserID(userID As String) As Staff
+            Using connection As New SqlConnection(_connectionString)
+                connection.Open()
+                Dim query As String = "SELECT StaffID, Initials, FullName, EmployeeID, PIN, IsActive, CreatedDate, LastLoginDate, BranchID FROM Staff WHERE Initials = @UserID AND IsActive = 1"
+
+                Using command As New SqlCommand(query, connection)
+                    command.Parameters.AddWithValue("@UserID", userID)
+
+                    Using reader As SqlDataReader = command.ExecuteReader()
+                        If reader.Read() Then
+                            Return New Staff With {
+                                .StaffID = reader.GetInt32("StaffID"),
+                                .UserID = reader.GetString("Initials"),
+                                .FullName = reader.GetString("FullName"),
+                                .EmployeeID = If(reader.IsDBNull("EmployeeID"), String.Empty, reader.GetString("EmployeeID")),
+                                .PIN = reader.GetString("PIN"),
+                                .IsActive = reader.GetBoolean("IsActive"),
+                                .CreatedDate = reader.GetDateTime("CreatedDate"),
+                                .BranchID = If(reader.IsDBNull("BranchID"), Nothing, reader.GetInt32("BranchID"))
+                            }
+                        End If
+                    End Using
+                End Using
+            End Using
+
+            Return Nothing
+        End Function
+
         ' Log completed tasks
         Public Function LogCompletedTasks(userID As String, branchId As Integer, shiftId As Integer,
                                 completedTaskIds As List(Of Integer), Optional notes As String = "",
@@ -117,11 +146,11 @@ Namespace Services
                 Using transaction As SqlTransaction = connection.BeginTransaction()
                     Try
                         For Each taskId As Integer In completedTaskIds
-                            Dim query As String = "INSERT INTO ChoreLog (UserID, BranchID, ShiftID, TaskID, CompletedDateTime, Status, Notes, AuthenticatedStaffID) " &
-                                        "VALUES (@UserID, @BranchID, @ShiftID, @TaskID, @CompletedDateTime, @Status, @Notes, @AuthenticatedStaffID)"
+                            Dim query As String = "INSERT INTO ChoreLog (StaffInitials, BranchID, ShiftID, TaskID, CompletedDateTime, Status, Notes, AuthenticatedStaffID) " &
+                                        "VALUES (@StaffInitials, @BranchID, @ShiftID, @TaskID, @CompletedDateTime, @Status, @Notes, @AuthenticatedStaffID)"
 
                             Using command As New SqlCommand(query, connection, transaction)
-                                command.Parameters.AddWithValue("@UserID", userID)
+                                command.Parameters.AddWithValue("@StaffInitials", userID)
                                 command.Parameters.AddWithValue("@BranchID", branchId)
                                 command.Parameters.AddWithValue("@ShiftID", shiftId)
                                 command.Parameters.AddWithValue("@TaskID", taskId)
@@ -197,7 +226,7 @@ Namespace Services
                         While reader.Read()
                             entries.Add(New ChoreLogEntry With {
                                 .LogID = reader.GetInt32("LogID"),
-                                .UserID = reader.GetString("UserID"),
+                                .UserID = reader.GetString("StaffInitials"),
                                 .BranchID = reader.GetInt32("BranchID"),
                                 .BranchName = reader.GetString("BranchName"),
                                 .ShiftID = reader.GetInt32("ShiftID"),

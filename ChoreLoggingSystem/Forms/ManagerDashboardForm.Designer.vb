@@ -1,4 +1,6 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
+﻿Imports ChoreLoggingSystem.Models
+
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class ManagerDashboardForm
     Inherits System.Windows.Forms.Form
 
@@ -696,5 +698,9 @@ Partial Class ManagerDashboardForm
     Friend WithEvents buttonExportData As Button
     Friend WithEvents labelRecordsCount As Label
     Friend WithEvents dataGridViewResults As DataGridView
+    Private authenticatedManager As Staff
 
+    Public Sub New(authenticatedManager As Staff)
+        Me.authenticatedManager = authenticatedManager
+    End Sub
 End Class

@@ -20,10 +20,11 @@ Module Program
 
             If loginResult = DialogResult.OK AndAlso loginForm.AuthenticatedManager IsNot Nothing Then
                 ' Authentication successful - open manager dashboard
-                Dim managerDashboard As New ManagerDashboardForm(LoginForm.AuthenticatedManager)
+                Dim managerDashboard As New ManagerDashboardForm(loginForm.AuthenticatedManager)
+
 
                 ' Run the main application with the dashboard form
-                Application.Run(managerDashboard)
+                Application.Run(ManagerDashboardForm)
             Else
                 ' Authentication failed or cancelled - exit application
                 MessageBox.Show("Login cancelled or failed. Application will exit.",

@@ -8,51 +8,50 @@ Namespace Forms
         Private ReadOnly _databaseService As DatabaseService
         Private ReadOnly _currentManager As Staff
 
-        Public Sub New()
-            Me.New(New Staff() With {
-        .FullName = "Design Preview",
-        .UserID = "PREVIEW",
-        .StaffID = 0
-    })
-        End Sub
-
         Public Sub New(loggedInManager As Staff)
+            MessageBox.Show("Constructor called for: " & loggedInManager.FullName, "Debug")
+
             InitializeComponent()
+            MessageBox.Show("InitializeComponent completed", "Debug")
+
             _currentManager = loggedInManager
             _databaseService = New DatabaseService()
 
             InitializeManagerDashboard()
+            MessageBox.Show("InitializeManagerDashboard completed", "Debug")
+
             LoadInitialData()
-        End Sub
-
-        Private Sub InitializeManagerDashboard()
-            ' Set window title
-            Me.Text = $"Manager Dashboard - {_currentManager.FullName}"
-
-            ' Apply manager-specific styling
-            ApplyManagerStyling()
+            MessageBox.Show("LoadInitialData completed", "Debug")
         End Sub
 
         Private Sub LoadInitialData()
             Try
-                ' Load all branches (managers see all locations)
+                ' Load branches and shifts
                 LoadAllBranches()
-
-                ' Load all shifts
                 LoadAllShifts()
 
-                ' Set default date range for reports
+                ' Set default date range
                 dateTimePickerFrom.Value = DateTime.Now.AddDays(-30)
                 dateTimePickerTo.Value = DateTime.Now
 
-                ' Load initial dashboard data
+                ' Load initial stats
+                labelTotalTasks.Text = "Total Tasks: 0"
+                labelUniqueStaff.Text = "Staff Members: 0"
+                labelBranchesActive.Text = "Active Branches: 0"
+                labelMostActiveBranch.Text = "Most Active: N/A"
+
+                ' Clear results
+                dataGridViewResults.Rows.Clear()
+
+                ' Optionally load full dashboard data
                 LoadDashboardData()
 
             Catch ex As Exception
                 MessageBox.Show($"Error loading dashboard: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End Sub
+
 
         Private Sub LoadAllBranches()
             ' Load branches for both task logging and filtering
@@ -934,5 +933,19 @@ Namespace Forms
         Friend WithEvents buttonApplyFilters As Button
         Friend WithEvents labelRecordsCount As Label
         Friend WithEvents dataGridViewResults As DataGridView
+
+        Private Sub InitializeManagerDashboard()
+            comboBoxTaskBranch.Items.Clear()
+            comboBoxTaskBranch.Items.AddRange(New String() {"Branch A", "Branch B", "Branch C"})
+
+            comboBoxTaskShift.Items.Clear()
+            comboBoxTaskShift.Items.AddRange(New String() {"Morning", "Afternoon", "Night"})
+
+            comboBoxTaskBranch.SelectedIndex = 0
+            comboBoxTaskShift.SelectedIndex = 0
+        End Sub
+
     End Class
 End Namespace
+
+

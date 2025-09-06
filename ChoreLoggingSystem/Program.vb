@@ -10,6 +10,7 @@ Module Program
         Application.SetCompatibleTextRenderingDefault(False)
 
         Dim loginForm As ManagerLoginForm = Nothing
+        Dim managerDashboard As ManagerDashboardForm = Nothing
 
         Try
             ' Show manager login form first
@@ -19,12 +20,11 @@ Module Program
             Dim loginResult As DialogResult = loginForm.ShowDialog()
 
             If loginResult = DialogResult.OK AndAlso loginForm.AuthenticatedManager IsNot Nothing Then
-                ' Authentication successful - open manager dashboard
-                Dim managerDashboard As New ManagerDashboardForm(loginForm.AuthenticatedManager)
+                ' Authentication successful - create manager dashboard instance
+                managerDashboard = New ManagerDashboardForm(loginForm.AuthenticatedManager)
 
-
-                ' Run the main application with the dashboard form
-                Application.Run(ManagerDashboardForm)
+                ' Run the main application with the dashboard form instance
+                Application.Run(managerDashboard)
             Else
                 ' Authentication failed or cancelled - exit application
                 MessageBox.Show("Login cancelled or failed. Application will exit.",
@@ -41,9 +41,12 @@ Module Program
                           "Startup Error",
                           MessageBoxButtons.OK, MessageBoxIcon.Error)
         Finally
-            ' Clean up login form
+            ' Clean up forms
             If loginForm IsNot Nothing Then
                 loginForm.Dispose()
+            End If
+            If managerDashboard IsNot Nothing Then
+                managerDashboard.Dispose()
             End If
         End Try
     End Sub

@@ -108,12 +108,12 @@ Namespace Services
             Return tasks
         End Function
 
-        ' Get staff by UserID
+        ' Get staff by UserID - FIXED to use correct column names
         Public Function GetStaffByUserID(userID As String) As Staff
             Using connection As New SqlConnection(_connectionString)
                 connection.Open()
-                ' Use 'Initials' column as that's what exists in your Staff table
-                Dim query As String = "SELECT StaffID, Initials, FullName, EmployeeID, PIN, IsActive, CreatedDate, LastLoginDate, BranchID FROM Staff WHERE Initials = @UserID AND IsActive = 1"
+                ' FIXED: Use 'UserID' column instead of 'Initials' to match your table structure
+                Dim query As String = "SELECT StaffID, UserID, FullName, EmployeeID, PIN, IsActive, CreatedDate, LastLoginDate, BranchID FROM Staff WHERE UserID = @UserID AND IsActive = 1"
 
                 Using command As New SqlCommand(query, connection)
                     command.Parameters.AddWithValue("@UserID", userID)
@@ -122,7 +122,7 @@ Namespace Services
                         If reader.Read() Then
                             Return New Staff With {
                                 .StaffID = reader.GetInt32("StaffID"),
-                                .UserID = reader.GetString("Initials"),
+                                .UserID = reader.GetString("UserID"),
                                 .FullName = reader.GetString("FullName"),
                                 .EmployeeID = If(reader.IsDBNull("EmployeeID"), String.Empty, reader.GetString("EmployeeID")),
                                 .PIN = reader.GetString("PIN"),
@@ -181,17 +181,19 @@ Namespace Services
                                          Optional staffInitials As String = Nothing) As List(Of ChoreLogEntry)
             Dim entries As New List(Of ChoreLogEntry)
 
-            ' FIXED: Updated query to use actual column names from your table
-            Dim query As String = "SELECT cl.LogID, cl.UserID, cl.BranchID, b.BranchName, " &
-                                "cl.ShiftID, s.ShiftName, cl.TaskID, t.TaskName, " &
-                                "cl.CompletedDateTime, cl.Status, " &
-                                "ISNULL(cl.Notes, '') as Notes, " &
-                                "ISNULL(cl.AuthenticatedStaffID, 0) as AuthenticatedStaffID " &
-                                "FROM ChoreLog cl " &
-                                "INNER JOIN Branches b ON cl.BranchID = b.BranchID " &
-                                "INNER JOIN Shifts s ON cl.ShiftID = s.ShiftID " &
-                                "INNER JOIN Tasks t ON cl.TaskID = t.TaskID " &
-                                "WHERE 1=1"
+            ' FIXED: Use LEFT JOINs to show data even if related records are missing
+            Dim query As String = "SELECT cl.LogID, cl.UserID, cl.BranchID, " &
+                      "ISNULL(b.BranchName, 'Unknown Branch') as BranchName, " &
+                      "cl.ShiftID, ISNULL(s.ShiftName, 'Unknown Shift') as ShiftName, " &
+                      "cl.TaskID, ISNULL(t.TaskName, 'Unknown Task') as TaskName, " &
+                      "cl.CompletedDateTime, cl.Status, " &
+                      "ISNULL(cl.Notes, '') as Notes, " &
+                      "ISNULL(cl.AuthenticatedStaffID, 0) as AuthenticatedStaffID " &
+                      "FROM ChoreLog cl " &
+                      "LEFT JOIN Branches b ON cl.BranchID = b.BranchID " &
+                      "LEFT JOIN Shifts s ON cl.ShiftID = s.ShiftID " &
+                      "LEFT JOIN Tasks t ON cl.TaskID = t.TaskID " &
+                      "WHERE 1=1"
 
             Dim parameters As New List(Of SqlParameter)
 

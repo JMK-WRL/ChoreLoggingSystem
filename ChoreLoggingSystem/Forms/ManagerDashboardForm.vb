@@ -239,7 +239,18 @@ Namespace Forms
                 Dim shiftId As Integer? = If(CInt(comboBoxFilterShift.SelectedValue) = -1, Nothing, CInt(comboBoxFilterShift.SelectedValue))
                 Dim staffSearch As String = If(String.IsNullOrWhiteSpace(textBoxFilterStaff.Text), Nothing, textBoxFilterStaff.Text.Trim())
 
+                ' DEBUG: Show what parameters we're using
+                MessageBox.Show($"From: {fromDate.ToShortDateString()}" & vbCrLf &
+                       $"To: {toDate.ToShortDateString()}" & vbCrLf &
+                       $"Branch: {branchId}" & vbCrLf &
+                       $"Shift: {shiftId}" & vbCrLf &
+                       $"Staff: {staffSearch}", "Debug - Filter Parameters")
+
                 Dim entries As List(Of ChoreLogEntry) = _databaseService.GetChoreLogEntries(fromDate, toDate, branchId, shiftId, staffSearch)
+
+                ' DEBUG: Show how many records we got
+                MessageBox.Show($"Records returned from database: {entries.Count}", "Debug - Data Count")
+
 
                 dataGridViewResults.DataSource = entries
                 FormatDataGrid()
@@ -350,6 +361,33 @@ Namespace Forms
                 ' Continue without styling if there are issues
             End Try
         End Sub
+
+        Private Sub buttonShowAllStaff_Click(sender As Object, e As EventArgs) Handles buttonShowAllStaff.Click
+            Try
+                ' Clear the staff filter to show all staff
+                textBoxFilterStaff.Clear()
+
+                ' Ensure "All Branches" and "All Shifts" are selected
+                comboBoxFilterBranch.SelectedIndex = 0  ' "All Branches"
+                comboBoxFilterShift.SelectedIndex = 0   ' "All Shifts"
+
+                ' Load all data with current date range
+                LoadDashboardData()
+
+                ' Optional: Show a status message
+                MessageBox.Show($"Showing all staff records from {dateTimePickerFrom.Value.ToShortDateString()} to {dateTimePickerTo.Value.ToShortDateString()}",
+                       "Filter Applied", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+            Catch ex As Exception
+                MessageBox.Show($"Error loading all staff data: {ex.Message}", "Error",
+                       MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End Sub
+
+        ' Private Sub buttonShowAllStaff_Click(sender As Object, e As EventArgs) Handles buttonShowAllStaff.Click
+        ' textBoxFilterStaff.Clear()
+        '  LoadDashboardData()
+        ' End Sub
 
     End Class
 End Namespace

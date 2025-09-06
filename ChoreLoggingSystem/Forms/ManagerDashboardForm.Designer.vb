@@ -66,6 +66,7 @@
             labelUniqueStaff = New Label()
             labelTotalTasks = New Label()
             labelReportsTitle = New Label()
+            buttonShowAllStaff = New Button()
             tabControlManager.SuspendLayout()
             tabPageTaskLogging.SuspendLayout()
             panelTaskLogging.SuspendLayout()
@@ -190,7 +191,7 @@
             checkedListBoxTasks.FormattingEnabled = True
             checkedListBoxTasks.Location = New Point(30, 170)
             checkedListBoxTasks.Name = "checkedListBoxTasks"
-            checkedListBoxTasks.Size = New Size(1040, 200)
+            checkedListBoxTasks.Size = New Size(1040, 182)
             checkedListBoxTasks.TabIndex = 9
             ' 
             ' labelTasks
@@ -342,6 +343,7 @@
             ' groupBoxFilters
             ' 
             groupBoxFilters.BackColor = Color.WhiteSmoke
+            groupBoxFilters.Controls.Add(buttonShowAllStaff)
             groupBoxFilters.Controls.Add(buttonExportData)
             groupBoxFilters.Controls.Add(buttonClearFilters)
             groupBoxFilters.Controls.Add(buttonApplyFilters)
@@ -400,7 +402,7 @@
             textBoxFilterStaff.CharacterCasing = CharacterCasing.Upper
             textBoxFilterStaff.Location = New Point(140, 73)
             textBoxFilterStaff.Name = "textBoxFilterStaff"
-            textBoxFilterStaff.Size = New Size(150, 23)
+            textBoxFilterStaff.Size = New Size(150, 25)
             textBoxFilterStaff.TabIndex = 9
             ' 
             ' labelFilterStaff
@@ -554,6 +556,18 @@
             labelReportsTitle.TabIndex = 0
             labelReportsTitle.Text = "Reports & Analytics Dashboard"
             ' 
+            ' buttonShowAllStaff
+            ' 
+            buttonShowAllStaff.BackColor = Color.SteelBlue
+            buttonShowAllStaff.FlatStyle = FlatStyle.Flat
+            buttonShowAllStaff.ForeColor = Color.White
+            buttonShowAllStaff.Location = New Point(792, 70)
+            buttonShowAllStaff.Name = "buttonShowAllStaff"
+            buttonShowAllStaff.Size = New Size(100, 30)
+            buttonShowAllStaff.TabIndex = 12
+            buttonShowAllStaff.Text = "Show All Staff"
+            buttonShowAllStaff.UseVisualStyleBackColor = False
+            ' 
             ' ManagerDashboardForm
             ' 
             AutoScaleDimensions = New SizeF(7.0F, 15.0F)
@@ -580,6 +594,12 @@
             groupBoxSummary.ResumeLayout(False)
             groupBoxSummary.PerformLayout()
             ResumeLayout(False)
+
+            '
+            ' button show All Staff
+            '
+            'buttonShowAllStaff.Text = "Show All Staff"
+            'buttonShowAllStaff.Location = New Point(300, 325)
 
         End Sub
 
@@ -626,6 +646,7 @@
         Friend WithEvents buttonExportData As Button
         Friend WithEvents labelRecordsCount As Label
         Friend WithEvents dataGridViewResults As DataGridView
+        Friend WithEvents buttonShowAllStaff As Button
 
     End Class
 End Namespace

@@ -23,7 +23,7 @@ Module Program
                 ' Authentication successful - create manager dashboard instance
                 managerDashboard = New ManagerDashboardForm(loginForm.AuthenticatedManager)
 
-                ' Run the main application with the dashboard form instance
+                ' ✅ FIXED: Run the main application with the dashboard form INSTANCE
                 Application.Run(managerDashboard)
             Else
                 ' Authentication failed or cancelled - exit application

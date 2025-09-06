@@ -691,6 +691,7 @@ Namespace Forms
             Controls.Add(tabControlManager)
             Name = "ManagerDashboardForm"
             Text = "Manager Dashboard - [FullName]"
+            AddHandler Load, New EventHandler(Me.ManagerDashboardForm_Load)
             tabControlManager.ResumeLayout(False)
             panelTaskLogging.ResumeLayout(False)
             Panel1.ResumeLayout(False)
@@ -740,5 +741,9 @@ Namespace Forms
         Friend WithEvents labelBrancesActive As Label
         Friend WithEvents labelUniqueStaff As Label
         Friend WithEvents labelMostActiveBranch As Label
+
+        Private Sub ManagerDashboardForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        End Sub
     End Class
 End Namespace

@@ -9,53 +9,48 @@ Namespace Forms
         Private ReadOnly _currentManager As Staff
 
         Public Sub New(loggedInManager As Staff)
+            ' Initialize the form components first
             InitializeComponent()
+
+            ' Set up the manager and database service
             _currentManager = loggedInManager
             _databaseService = New DatabaseService()
 
+            ' Initialize the dashboard
             InitializeManagerDashboard()
+
+            ' Load initial data
             LoadInitialData()
         End Sub
 
         Private Sub InitializeManagerDashboard()
-            ' Set window title
-            Me.Text = $"Manager Dashboard - {_currentManager.FullName}"
+            ' Set window title with manager name
+            Me.Text = $"Excellence Care Solutions - Manager Dashboard - {_currentManager.FullName}"
 
-            ' Initialize tab control for different sections
-            SetupTabControl()
-
-            ' Apply manager-specific styling
+            ' Apply styling
             ApplyManagerStyling()
-        End Sub
-
-        Private Sub SetupTabControl()
-            ' Create tab control with two main sections
-            tabControlManager.TabPages.Clear()
-
-            ' Task Logging Tab
-            Dim taskLoggingTab As New TabPage("Task Logging")
-            taskLoggingTab.Controls.Add(panelTaskLogging)
-            tabControlManager.TabPages.Add(taskLoggingTab)
-
-            ' Reports & Analytics Tab  
-            Dim reportsTab As New TabPage("Reports & Analytics")
-            reportsTab.Controls.Add(panelReports)
-            tabControlManager.TabPages.Add(reportsTab)
         End Sub
 
         Private Sub LoadInitialData()
             Try
-                ' Load all branches (managers see all locations)
+                ' Load branches and shifts
                 LoadAllBranches()
-
-                ' Load all shifts
                 LoadAllShifts()
 
-                ' Set default date range for reports
-                dateTimePickerFrom.Value = DateTime.Now.AddDays(-30)
-                dateTimePickerTo.Value = DateTime.Now
+                ' Set default date range
+                DateTimePickerFrom.Value = DateTime.Now.AddDays(-30)
+                DateTimePickerTo.Value = DateTime.Now
 
-                ' Load initial dashboard data
+                ' Load initial stats
+                labelTotalTasks.Text = "Total Tasks: 0"
+                labelUniqueStaff.Text = "Staff Members: 0"
+                labelBranchesActive.Text = "Active Branches: 0"
+                labelMostActiveBranch.Text = "Most Active: N/A"
+
+                ' Clear results
+                dataGridViewResults.DataSource = Nothing
+
+                ' Load dashboard data
                 LoadDashboardData()
 
             Catch ex As Exception
@@ -65,47 +60,55 @@ Namespace Forms
         End Sub
 
         Private Sub LoadAllBranches()
-            ' Load branches for both task logging and filtering
-            Dim branches As List(Of Branch) = _databaseService.GetBranches()
+            Try
+                ' Load branches for both task logging and filtering
+                Dim branches As List(Of Branch) = _databaseService.GetBranches()
 
-            ' Task logging branch dropdown
-            comboBoxTaskBranch.DataSource = New List(Of Branch)(branches)
-            comboBoxTaskBranch.DisplayMember = "BranchName"
-            comboBoxTaskBranch.ValueMember = "BranchID"
-            comboBoxTaskBranch.SelectedIndex = -1
+                ' Task logging branch dropdown
+                comboBoxTaskBranch.DataSource = New List(Of Branch)(branches)
+                comboBoxTaskBranch.DisplayMember = "BranchName"
+                comboBoxTaskBranch.ValueMember = "BranchID"
+                comboBoxTaskBranch.SelectedIndex = -1
 
-            ' Filter branch dropdown (with "All Branches" option)
-            Dim filterBranches As New List(Of Branch) From {
-                New Branch With {.BranchID = -1, .BranchName = "All Branches"}
-            }
-            filterBranches.AddRange(branches)
+                ' Filter branch dropdown (with "All Branches" option)
+                Dim filterBranches As New List(Of Branch) From {
+                    New Branch With {.BranchID = -1, .BranchName = "All Branches"}
+                }
+                filterBranches.AddRange(branches)
 
-            comboBoxFilterBranch.DataSource = filterBranches
-            comboBoxFilterBranch.DisplayMember = "BranchName"
-            comboBoxFilterBranch.ValueMember = "BranchID"
-            comboBoxFilterBranch.SelectedIndex = 0
+                ComboBoxFilterBranch.DataSource = filterBranches
+                ComboBoxFilterBranch.DisplayMember = "BranchName"
+                ComboBoxFilterBranch.ValueMember = "BranchID"
+                ComboBoxFilterBranch.SelectedIndex = 0
+            Catch ex As Exception
+                MessageBox.Show($"Error loading branches: {ex.Message}", "Error")
+            End Try
         End Sub
 
         Private Sub LoadAllShifts()
-            ' Load shifts for both task logging and filtering
-            Dim shifts As List(Of Shift) = _databaseService.GetShifts()
+            Try
+                ' Load shifts for both task logging and filtering
+                Dim shifts As List(Of Shift) = _databaseService.GetShifts()
 
-            ' Task logging shift dropdown
-            comboBoxTaskShift.DataSource = New List(Of Shift)(shifts)
-            comboBoxTaskShift.DisplayMember = "ShiftName"
-            comboBoxTaskShift.ValueMember = "ShiftID"
-            comboBoxTaskShift.SelectedIndex = -1
+                ' Task logging shift dropdown
+                comboBoxTaskShift.DataSource = New List(Of Shift)(shifts)
+                comboBoxTaskShift.DisplayMember = "ShiftName"
+                comboBoxTaskShift.ValueMember = "ShiftID"
+                comboBoxTaskShift.SelectedIndex = -1
 
-            ' Filter shift dropdown (with "All Shifts" option)
-            Dim filterShifts As New List(Of Shift) From {
-                New Shift With {.ShiftID = -1, .ShiftName = "All Shifts"}
-            }
-            filterShifts.AddRange(shifts)
+                ' Filter shift dropdown (with "All Shifts" option)
+                Dim filterShifts As New List(Of Shift) From {
+                    New Shift With {.ShiftID = -1, .ShiftName = "All Shifts"}
+                }
+                filterShifts.AddRange(shifts)
 
-            comboBoxFilterShift.DataSource = filterShifts
-            comboBoxFilterShift.DisplayMember = "ShiftName"
-            comboBoxFilterShift.ValueMember = "ShiftID"
-            comboBoxFilterShift.SelectedIndex = 0
+                ComboBoxFilterShift.DataSource = filterShifts
+                ComboBoxFilterShift.DisplayMember = "ShiftName"
+                ComboBoxFilterShift.ValueMember = "ShiftID"
+                ComboBoxFilterShift.SelectedIndex = 0
+            Catch ex As Exception
+                MessageBox.Show($"Error loading shifts: {ex.Message}", "Error")
+            End Try
         End Sub
 
         ' AUTO-FILL STAFF NAME FUNCTIONALITY
@@ -230,11 +233,11 @@ Namespace Forms
 
         Private Sub LoadDashboardData()
             Try
-                Dim fromDate As DateTime = dateTimePickerFrom.Value.Date
-                Dim toDate As DateTime = dateTimePickerTo.Value.Date
-                Dim branchId As Integer? = If(CInt(comboBoxFilterBranch.SelectedValue) = -1, Nothing, CInt(comboBoxFilterBranch.SelectedValue))
-                Dim shiftId As Integer? = If(CInt(comboBoxFilterShift.SelectedValue) = -1, Nothing, CInt(comboBoxFilterShift.SelectedValue))
-                Dim staffSearch As String = If(String.IsNullOrWhiteSpace(textBoxFilterStaff.Text), Nothing, textBoxFilterStaff.Text.Trim())
+                Dim fromDate As DateTime = DateTimePickerFrom.Value.Date
+                Dim toDate As DateTime = DateTimePickerTo.Value.Date
+                Dim branchId As Integer? = If(CInt(ComboBoxFilterBranch.SelectedValue) = -1, Nothing, CInt(ComboBoxFilterBranch.SelectedValue))
+                Dim shiftId As Integer? = If(CInt(ComboBoxFilterShift.SelectedValue) = -1, Nothing, CInt(ComboBoxFilterShift.SelectedValue))
+                Dim staffSearch As String = If(String.IsNullOrWhiteSpace(TextBoxFilterStaff.Text), Nothing, TextBoxFilterStaff.Text.Trim())
 
                 Dim entries As List(Of ChoreLogEntry) = _databaseService.GetChoreLogEntries(fromDate, toDate, branchId, shiftId, staffSearch)
 
@@ -249,6 +252,20 @@ Namespace Forms
             Catch ex As Exception
                 MessageBox.Show($"Error loading dashboard data: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End Sub
+
+        Private Sub FormatDataGrid()
+            Try
+                If dataGridViewResults.DataSource IsNot Nothing Then
+                    dataGridViewResults.AutoResizeColumns()
+                    dataGridViewResults.AllowUserToAddRows = False
+                    dataGridViewResults.AllowUserToDeleteRows = False
+                    dataGridViewResults.ReadOnly = True
+                    dataGridViewResults.SelectionMode = DataGridViewSelectionMode.FullRowSelect
+                End If
+            Catch ex As Exception
+                ' Continue without formatting if there are issues
             End Try
         End Sub
 
@@ -286,23 +303,52 @@ Namespace Forms
             checkedListBoxTasks.Items.Clear()
         End Sub
 
+        Private Sub buttonResetTaskForm_Click(sender As Object, e As EventArgs) Handles buttonResetTaskForm.Click
+            ResetTaskForm()
+        End Sub
+
+        Private Sub buttonClearFilters_Click(sender As Object, e As EventArgs) Handles buttonClearFilters.Click
+            ' Reset all filter controls
+            ComboBoxFilterBranch.SelectedIndex = 0 ' "All Branches"
+            ComboBoxFilterShift.SelectedIndex = 0 ' "All Shifts"
+            TextBoxFilterStaff.Clear()
+            DateTimePickerFrom.Value = DateTime.Now.AddDays(-30)
+            DateTimePickerTo.Value = DateTime.Now
+
+            ' Reload data with cleared filters
+            LoadDashboardData()
+        End Sub
+
+        Private Sub buttonExportData_Click(sender As Object, e As EventArgs) Handles buttonExportData.Click
+            Try
+                ' Simple export functionality - can be enhanced later
+                MessageBox.Show("Export functionality will be implemented in a future version.",
+                              "Feature Coming Soon",
+                              MessageBoxButtons.OK,
+                              MessageBoxIcon.Information)
+            Catch ex As Exception
+                MessageBox.Show($"Export error: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End Sub
+
         Private Sub ApplyManagerStyling()
-            ' Manager-specific color scheme
-            Me.BackColor = Color.FromArgb(240, 248, 255) ' Light blue
+            Try
+                ' Manager-specific color scheme
+                Me.BackColor = Color.FromArgb(240, 248, 255) ' Light blue
 
-            ' Tab styling
-            tabControlManager.BackColor = Color.FromArgb(230, 240, 250)
+                ' Tab styling
+                tabControlManager.BackColor = Color.FromArgb(230, 240, 250)
 
-            ' Panel styling
-            panelTaskLogging.BackColor = Color.White
-            panelReports.BackColor = Color.White
+                ' Button styling
+                buttonSubmitTasks.BackColor = Color.FromArgb(0, 120, 70)
+                buttonSubmitTasks.ForeColor = Color.White
 
-            ' Button styling
-            buttonSubmitTasks.BackColor = Color.FromArgb(0, 120, 70)
-            buttonSubmitTasks.ForeColor = Color.White
-
-            buttonApplyFilters.BackColor = Color.FromArgb(70, 130, 180)
-            buttonApplyFilters.ForeColor = Color.White
+                buttonApplyFilters.BackColor = Color.FromArgb(70, 130, 180)
+                buttonApplyFilters.ForeColor = Color.White
+            Catch ex As Exception
+                ' Continue without styling if there are issues
+            End Try
         End Sub
 
         Friend WithEvents tabControlManager As TabControl
@@ -691,7 +737,6 @@ Namespace Forms
             Controls.Add(tabControlManager)
             Name = "ManagerDashboardForm"
             Text = "Manager Dashboard - [FullName]"
-            AddHandler Load, New EventHandler(Me.ManagerDashboardForm_Load)
             tabControlManager.ResumeLayout(False)
             panelTaskLogging.ResumeLayout(False)
             Panel1.ResumeLayout(False)
@@ -741,9 +786,5 @@ Namespace Forms
         Friend WithEvents labelBrancesActive As Label
         Friend WithEvents labelUniqueStaff As Label
         Friend WithEvents labelMostActiveBranch As Label
-
-        Private Sub ManagerDashboardForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-        End Sub
     End Class
 End Namespace

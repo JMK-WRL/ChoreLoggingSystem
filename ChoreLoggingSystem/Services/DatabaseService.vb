@@ -108,7 +108,37 @@ Namespace Services
             Return tasks
         End Function
 
-        ' Log completed tasks
+        ' Get staff by UserID
+        Public Function GetStaffByUserID(userID As String) As Staff
+            Using connection As New SqlConnection(_connectionString)
+                connection.Open()
+                ' Use 'Initials' column as that's what exists in your Staff table
+                Dim query As String = "SELECT StaffID, Initials, FullName, EmployeeID, PIN, IsActive, CreatedDate, LastLoginDate, BranchID FROM Staff WHERE Initials = @UserID AND IsActive = 1"
+
+                Using command As New SqlCommand(query, connection)
+                    command.Parameters.AddWithValue("@UserID", userID)
+
+                    Using reader As SqlDataReader = command.ExecuteReader()
+                        If reader.Read() Then
+                            Return New Staff With {
+                                .StaffID = reader.GetInt32("StaffID"),
+                                .UserID = reader.GetString("Initials"),
+                                .FullName = reader.GetString("FullName"),
+                                .EmployeeID = If(reader.IsDBNull("EmployeeID"), String.Empty, reader.GetString("EmployeeID")),
+                                .PIN = reader.GetString("PIN"),
+                                .IsActive = reader.GetBoolean("IsActive"),
+                                .CreatedDate = reader.GetDateTime("CreatedDate"),
+                                .BranchID = If(reader.IsDBNull("BranchID"), Nothing, reader.GetInt32("BranchID"))
+                            }
+                        End If
+                    End Using
+                End Using
+            End Using
+
+            Return Nothing
+        End Function
+
+        ' Log completed tasks - FIXED to use correct column names
         Public Function LogCompletedTasks(userID As String, branchId As Integer, shiftId As Integer,
                                 completedTaskIds As List(Of Integer), Optional notes As String = "",
                                 Optional authenticatedStaffId As Integer = 0) As Boolean
@@ -117,6 +147,7 @@ Namespace Services
                 Using transaction As SqlTransaction = connection.BeginTransaction()
                     Try
                         For Each taskId As Integer In completedTaskIds
+                            ' FIXED: Use 'UserID' column instead of 'StaffInitials' to match your table structure
                             Dim query As String = "INSERT INTO ChoreLog (UserID, BranchID, ShiftID, TaskID, CompletedDateTime, Status, Notes, AuthenticatedStaffID) " &
                                         "VALUES (@UserID, @BranchID, @ShiftID, @TaskID, @CompletedDateTime, @Status, @Notes, @AuthenticatedStaffID)"
 
@@ -144,15 +175,18 @@ Namespace Services
             End Using
         End Function
 
-        ' Get filtered chore log entries
+        ' Get filtered chore log entries - FIXED to use correct column names
         Public Function GetChoreLogEntries(Optional fromDate As DateTime? = Nothing, Optional toDate As DateTime? = Nothing,
                                          Optional branchId As Integer? = Nothing, Optional shiftId As Integer? = Nothing,
                                          Optional staffInitials As String = Nothing) As List(Of ChoreLogEntry)
             Dim entries As New List(Of ChoreLogEntry)
 
-            Dim query As String = "SELECT cl.LogID, cl.StaffInitials, cl.BranchID, b.BranchName, " &
+            ' FIXED: Updated query to use actual column names from your table
+            Dim query As String = "SELECT cl.LogID, cl.UserID, cl.BranchID, b.BranchName, " &
                                 "cl.ShiftID, s.ShiftName, cl.TaskID, t.TaskName, " &
-                                "cl.CompletedDateTime, cl.Status, cl.Notes " &
+                                "cl.CompletedDateTime, cl.Status, " &
+                                "ISNULL(cl.Notes, '') as Notes, " &
+                                "ISNULL(cl.AuthenticatedStaffID, 0) as AuthenticatedStaffID " &
                                 "FROM ChoreLog cl " &
                                 "INNER JOIN Branches b ON cl.BranchID = b.BranchID " &
                                 "INNER JOIN Shifts s ON cl.ShiftID = s.ShiftID " &
@@ -182,7 +216,7 @@ Namespace Services
             End If
 
             If Not String.IsNullOrEmpty(staffInitials) Then
-                query &= " AND cl.StaffInitials LIKE @StaffInitials"
+                query &= " AND cl.UserID LIKE @StaffInitials"
                 parameters.Add(New SqlParameter("@StaffInitials", $"%{staffInitials}%"))
             End If
 
@@ -206,7 +240,8 @@ Namespace Services
                                 .TaskName = reader.GetString("TaskName"),
                                 .CompletedDateTime = reader.GetDateTime("CompletedDateTime"),
                                 .Status = reader.GetString("Status"),
-                                .Notes = If(reader.IsDBNull("Notes"), String.Empty, reader.GetString("Notes"))
+                                .Notes = reader.GetString("Notes"),
+                                .AuthenticatedStaffID = reader.GetInt32("AuthenticatedStaffID")
                             })
                         End While
                     End Using

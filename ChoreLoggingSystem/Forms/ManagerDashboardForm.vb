@@ -36,10 +36,11 @@ Namespace Forms
                 ' Load branches and shifts
                 LoadAllBranches()
                 LoadAllShifts()
+                LoadAllStaffForFilter()
 
                 ' Set default date range
-                dateTimePickerFrom.Value = DateTime.Now.AddDays(-30)
-                dateTimePickerTo.Value = DateTime.Now
+                dateTimePickerFrom.Value = DateTime.Today.AddDays(-7)
+                dateTimePickerTo.Value = DateTime.Today.AddDays(1)
 
                 ' Load initial stats
                 labelTotalTasks.Text = "Total Tasks: 0"
@@ -233,20 +234,40 @@ Namespace Forms
 
         Private Sub LoadDashboardData()
             Try
+
+                'Me.Cursor = Cursors.WaitCursor
+                'labelRecordsCount.Text = "Loading..."
+
                 Dim fromDate As DateTime = dateTimePickerFrom.Value.Date
                 Dim toDate As DateTime = dateTimePickerTo.Value.Date
-                Dim branchId As Integer? = If(CInt(comboBoxFilterBranch.SelectedValue) = -1, Nothing, CInt(comboBoxFilterBranch.SelectedValue))
-                Dim shiftId As Integer? = If(CInt(comboBoxFilterShift.SelectedValue) = -1, Nothing, CInt(comboBoxFilterShift.SelectedValue))
-                Dim staffSearch As String = If(String.IsNullOrWhiteSpace(textBoxFilterStaff.Text), Nothing, textBoxFilterStaff.Text.Trim())
+
+                Dim branchId As Integer? = Nothing
+                If comboBoxFilterBranch.SelectedValue IsNot Nothing AndAlso
+                        CInt(comboBoxFilterBranch.SelectedValue) <> -1 Then
+                    branchId = CInt(comboBoxFilterBranch.SelectedValue)
+                End If
+
+                Dim shiftId As Integer? = Nothing
+                If comboBoxFilterShift.SelectedValue IsNot Nothing AndAlso
+                        CInt(comboBoxFilterShift.SelectedValue) <> -1 Then
+                    shiftId = CInt(comboBoxFilterShift.SelectedValue)
+                End If
+
+                Dim staffInitials As String = Nothing
+                If comboBoxFilterStaff.SelectedValue IsNot Nothing AndAlso
+                        Not String.IsNullOrEmpty(comboBoxFilterStaff.SelectedValue.ToString()) Then
+                    staffInitials = comboBoxFilterStaff.SelectedValue.ToString()
+                End If
 
                 ' DEBUG: Show what parameters we're using
-                MessageBox.Show($"From: {fromDate.ToShortDateString()}" & vbCrLf &
+                MessageBox.Show($"Parameters:" & vbCrLf &
+                       $"From: {fromDate.ToShortDateString()}" & vbCrLf &
                        $"To: {toDate.ToShortDateString()}" & vbCrLf &
                        $"Branch: {branchId}" & vbCrLf &
                        $"Shift: {shiftId}" & vbCrLf &
-                       $"Staff: {staffSearch}", "Debug - Filter Parameters")
+                       $"Staff: {staffInitials}", "Debug - Filter Parameters")
 
-                Dim entries As List(Of ChoreLogEntry) = _databaseService.GetChoreLogEntries(fromDate, toDate, branchId, shiftId, staffSearch)
+                Dim entries As List(Of ChoreLogEntry) = _databaseService.GetChoreLogEntries(fromDate, toDate, branchId, shiftId, staffInitials)
 
                 ' DEBUG: Show how many records we got
                 MessageBox.Show($"Records returned from database: {entries.Count}", "Debug - Data Count")
@@ -322,7 +343,7 @@ Namespace Forms
             ' Reset all filter controls
             comboBoxFilterBranch.SelectedIndex = 0 ' "All Branches"
             comboBoxFilterShift.SelectedIndex = 0 ' "All Shifts"
-            textBoxFilterStaff.Clear()
+            comboBoxFilterStaff.SelectedIndex = 0 ' "All Staff"
             dateTimePickerFrom.Value = DateTime.Now.AddDays(-30)
             dateTimePickerTo.Value = DateTime.Now
 
@@ -362,32 +383,34 @@ Namespace Forms
             End Try
         End Sub
 
-        Private Sub buttonShowAllStaff_Click(sender As Object, e As EventArgs) Handles buttonShowAllStaff.Click
+
+        ' NEW: Load all staff for the filter ComboBox
+        Private Sub LoadAllStaffForFilter()
             Try
-                ' Clear the staff filter to show all staff
-                textBoxFilterStaff.Clear()
+                Dim allStaff As List(Of Staff) = _databaseService.GetAllActiveStaff()
 
-                ' Ensure "All Branches" and "All Shifts" are selected
-                comboBoxFilterBranch.SelectedIndex = 0  ' "All Branches"
-                comboBoxFilterShift.SelectedIndex = 0   ' "All Shifts"
+                ' Create filter list with "All Staff" option at the top
+                Dim filterStaff As New List(Of Object) From {
+                    New With {.UserID = "", .DisplayName = "All Staff"}
+                }
 
-                ' Load all data with current date range
-                LoadDashboardData()
+                ' Add individual staff members sorted alphabetically by full name
+                For Each staff In allStaff.OrderBy(Function(s) s.FullName)
+                    filterStaff.Add(New With {
+                        .UserID = staff.UserID,
+                        .DisplayName = $"{staff.FullName} ({staff.UserID})"
+                    })
+                Next
 
-                ' Optional: Show a status message
-                MessageBox.Show($"Showing all staff records from {dateTimePickerFrom.Value.ToShortDateString()} to {dateTimePickerTo.Value.ToShortDateString()}",
-                       "Filter Applied", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                comboBoxFilterStaff.DataSource = filterStaff
+                comboBoxFilterStaff.DisplayMember = "DisplayName"
+                comboBoxFilterStaff.ValueMember = "UserID"
+                comboBoxFilterStaff.SelectedIndex = 0 ' Select "All Staff" by default
 
             Catch ex As Exception
-                MessageBox.Show($"Error loading all staff data: {ex.Message}", "Error",
-                       MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show($"Error loading staff filter: {ex.Message}", "Error")
             End Try
         End Sub
-
-        ' Private Sub buttonShowAllStaff_Click(sender As Object, e As EventArgs) Handles buttonShowAllStaff.Click
-        ' textBoxFilterStaff.Clear()
-        '  LoadDashboardData()
-        ' End Sub
 
     End Class
 End Namespace

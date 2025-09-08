@@ -50,7 +50,7 @@
             buttonExportData = New Button()
             buttonClearFilters = New Button()
             buttonApplyFilters = New Button()
-            textBoxFilterStaff = New TextBox()
+            comboBoxFilterStaff = New ComboBox()
             labelFilterStaff = New Label()
             comboBoxFilterShift = New ComboBox()
             labelFilterShift = New Label()
@@ -347,7 +347,7 @@
             groupBoxFilters.Controls.Add(buttonExportData)
             groupBoxFilters.Controls.Add(buttonClearFilters)
             groupBoxFilters.Controls.Add(buttonApplyFilters)
-            groupBoxFilters.Controls.Add(textBoxFilterStaff)
+            groupBoxFilters.Controls.Add(comboBoxFilterStaff)
             groupBoxFilters.Controls.Add(labelFilterStaff)
             groupBoxFilters.Controls.Add(comboBoxFilterShift)
             groupBoxFilters.Controls.Add(labelFilterShift)
@@ -397,13 +397,14 @@
             buttonApplyFilters.Text = "Apply Filters"
             buttonApplyFilters.UseVisualStyleBackColor = False
             ' 
-            ' textBoxFilterStaff
-            ' 
-            textBoxFilterStaff.CharacterCasing = CharacterCasing.Upper
-            textBoxFilterStaff.Location = New Point(140, 73)
-            textBoxFilterStaff.Name = "textBoxFilterStaff"
-            textBoxFilterStaff.Size = New Size(150, 25)
-            textBoxFilterStaff.TabIndex = 9
+            ' comboBoxFilterStaff
+            '
+            comboBoxFilterStaff.DropDownStyle = ComboBoxStyle.DropDownList
+            comboBoxFilterStaff.FormattingEnabled = True
+            comboBoxFilterStaff.Location = New Point(140, 73)
+            comboBoxFilterStaff.Name = "comboBoxFilterStaff"
+            comboBoxFilterStaff.Size = New Size(180, 25)
+            comboBoxFilterStaff.TabIndex = 9
             ' 
             ' labelFilterStaff
             ' 
@@ -640,13 +641,13 @@
         Friend WithEvents labelFilterShift As Label
         Friend WithEvents comboBoxFilterShift As ComboBox
         Friend WithEvents labelFilterStaff As Label
-        Friend WithEvents textBoxFilterStaff As TextBox
         Friend WithEvents buttonApplyFilters As Button
         Friend WithEvents buttonClearFilters As Button
         Friend WithEvents buttonExportData As Button
         Friend WithEvents labelRecordsCount As Label
         Friend WithEvents dataGridViewResults As DataGridView
         Friend WithEvents buttonShowAllStaff As Button
+        Friend WithEvents comboBoxFilterStaff As ComboBox
 
     End Class
 End Namespace

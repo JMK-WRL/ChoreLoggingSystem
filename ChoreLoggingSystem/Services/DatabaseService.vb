@@ -181,6 +181,17 @@ Namespace Services
                                          Optional staffInitials As String = Nothing) As List(Of ChoreLogEntry)
             Dim entries As New List(Of ChoreLogEntry)
 
+            ' DEBUG: First test the basic query without filters
+            Dim testQuery As String = "SELECT COUNT(*) FROM ChoreLog"
+            Using testConnection As New SqlConnection(_connectionString)
+                testConnection.Open()
+                Using testCommand As New SqlCommand(testQuery, testConnection)
+                    Dim totalRecords As Integer = CInt(testCommand.ExecuteScalar())
+                    ' You can add a debug message here if needed
+                    System.Diagnostics.Debug.WriteLine($"Total ChoreLog records: {totalRecords}")
+                End Using
+            End Using
+
             ' FIXED: Use LEFT JOINs to show data even if related records are missing
             Dim query As String = "SELECT cl.LogID, cl.UserID, cl.BranchID, " &
                       "ISNULL(b.BranchName, 'Unknown Branch') as BranchName, " &
@@ -207,12 +218,12 @@ Namespace Services
                 parameters.Add(New SqlParameter("@ToDate", toDate.Value.Date))
             End If
 
-            If branchId.HasValue Then
+            If branchId.HasValue AndAlso branchId.Value <> -1 Then
                 query &= " AND cl.BranchID = @BranchID"
                 parameters.Add(New SqlParameter("@BranchID", branchId.Value))
             End If
 
-            If shiftId.HasValue Then
+            If shiftId.HasValue AndAlso shiftId.Value <> -1 Then
                 query &= " AND cl.ShiftID = @ShiftID"
                 parameters.Add(New SqlParameter("@ShiftID", shiftId.Value))
             End If
@@ -251,6 +262,30 @@ Namespace Services
             End Using
 
             Return entries
+        End Function
+
+        ' Add this new method to get all active staff
+        Public Function GetAllActiveStaff() As List(Of Staff)
+            Dim staff As New List(Of Staff)
+
+            Using connection As New SqlConnection(_connectionString)
+                connection.Open()
+                Dim query As String = "SELECT StaffID, UserID, FullName FROM Staff WHERE IsActive = 1 ORDER BY FullName"
+
+                Using command As New SqlCommand(query, connection)
+                    Using reader As SqlDataReader = command.ExecuteReader()
+                        While reader.Read()
+                            staff.Add(New Staff With {
+                                .StaffID = reader.GetInt32("StaffID"),
+                                .UserID = reader.GetString("UserID"),
+                                .FullName = reader.GetString("FullName")
+                            })
+                        End While
+                    End Using
+                End Using
+            End Using
+
+            Return staff
         End Function
     End Class
 End Namespace

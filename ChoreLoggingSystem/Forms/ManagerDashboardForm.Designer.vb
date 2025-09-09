@@ -66,7 +66,6 @@
             labelUniqueStaff = New Label()
             labelTotalTasks = New Label()
             labelReportsTitle = New Label()
-            buttonShowAllStaff = New Button()
             tabControlManager.SuspendLayout()
             tabPageTaskLogging.SuspendLayout()
             panelTaskLogging.SuspendLayout()
@@ -187,7 +186,7 @@
             checkedListBoxTasks.BackColor = Color.White
             checkedListBoxTasks.BorderStyle = BorderStyle.FixedSingle
             checkedListBoxTasks.CheckOnClick = True
-            checkedListBoxTasks.Font = New Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+            checkedListBoxTasks.Font = New Font("Segoe UI Semibold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
             checkedListBoxTasks.FormattingEnabled = True
             checkedListBoxTasks.Location = New Point(30, 170)
             checkedListBoxTasks.Name = "checkedListBoxTasks"
@@ -224,7 +223,7 @@
             ' comboBoxTaskBranch
             ' 
             comboBoxTaskBranch.DropDownStyle = ComboBoxStyle.DropDownList
-            comboBoxTaskBranch.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+            comboBoxTaskBranch.Font = New Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
             comboBoxTaskBranch.FormattingEnabled = True
             comboBoxTaskBranch.Location = New Point(180, 88)
             comboBoxTaskBranch.Name = "comboBoxTaskBranch"
@@ -261,7 +260,7 @@
             ' textBoxUserID
             ' 
             textBoxUserID.CharacterCasing = CharacterCasing.Upper
-            textBoxUserID.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+            textBoxUserID.Font = New Font("Segoe UI Semibold", 11.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
             textBoxUserID.Location = New Point(180, 38)
             textBoxUserID.MaxLength = 10
             textBoxUserID.Name = "textBoxUserID"
@@ -343,7 +342,6 @@
             ' groupBoxFilters
             ' 
             groupBoxFilters.BackColor = Color.WhiteSmoke
-            groupBoxFilters.Controls.Add(buttonShowAllStaff)
             groupBoxFilters.Controls.Add(buttonExportData)
             groupBoxFilters.Controls.Add(buttonClearFilters)
             groupBoxFilters.Controls.Add(buttonApplyFilters)
@@ -398,7 +396,7 @@
             buttonApplyFilters.UseVisualStyleBackColor = False
             ' 
             ' comboBoxFilterStaff
-            '
+            ' 
             comboBoxFilterStaff.DropDownStyle = ComboBoxStyle.DropDownList
             comboBoxFilterStaff.FormattingEnabled = True
             comboBoxFilterStaff.Location = New Point(140, 73)
@@ -504,7 +502,7 @@
             labelMostActiveBranch.AutoSize = True
             labelMostActiveBranch.BackColor = Color.Red
             labelMostActiveBranch.ForeColor = Color.White
-            labelMostActiveBranch.Location = New Point(830, 35)
+            labelMostActiveBranch.Location = New Point(800, 35)
             labelMostActiveBranch.Name = "labelMostActiveBranch"
             labelMostActiveBranch.Padding = New Padding(10, 5, 10, 5)
             labelMostActiveBranch.Size = New Size(134, 27)
@@ -557,21 +555,9 @@
             labelReportsTitle.TabIndex = 0
             labelReportsTitle.Text = "Reports & Analytics Dashboard"
             ' 
-            ' buttonShowAllStaff
-            ' 
-            buttonShowAllStaff.BackColor = Color.SteelBlue
-            buttonShowAllStaff.FlatStyle = FlatStyle.Flat
-            buttonShowAllStaff.ForeColor = Color.White
-            buttonShowAllStaff.Location = New Point(792, 70)
-            buttonShowAllStaff.Name = "buttonShowAllStaff"
-            buttonShowAllStaff.Size = New Size(100, 30)
-            buttonShowAllStaff.TabIndex = 12
-            buttonShowAllStaff.Text = "Show All Staff"
-            buttonShowAllStaff.UseVisualStyleBackColor = False
-            ' 
             ' ManagerDashboardForm
             ' 
-            AutoScaleDimensions = New SizeF(7.0F, 15.0F)
+            AutoScaleDimensions = New SizeF(7F, 15F)
             AutoScaleMode = AutoScaleMode.Font
             BackColor = Color.LightBlue
             ClientSize = New Size(1184, 721)
@@ -646,7 +632,6 @@
         Friend WithEvents buttonExportData As Button
         Friend WithEvents labelRecordsCount As Label
         Friend WithEvents dataGridViewResults As DataGridView
-        Friend WithEvents buttonShowAllStaff As Button
         Friend WithEvents comboBoxFilterStaff As ComboBox
 
     End Class

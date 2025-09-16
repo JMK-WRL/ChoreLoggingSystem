@@ -193,8 +193,9 @@ Namespace Services
             End Using
 
             ' FIXED: Use LEFT JOINs to show data even if related records are missing
-            Dim query As String = "SELECT cl.LogID, cl.UserID, cl.BranchID, " &
-                      "ISNULL(b.BranchName, 'Unknown Branch') as BranchName, " &
+            Dim query As String = "SELECT cl.LogID, cl.UserID, " &
+                      "ISNULL(staff.FullName, 'Unknown Staff') as StaffName, " &
+                      "cl.BranchID, ISNULL(b.BranchName, 'Unknown Branch') as BranchName, " &
                       "cl.ShiftID, ISNULL(s.ShiftName, 'Unknown Shift') as ShiftName, " &
                       "cl.TaskID, ISNULL(t.TaskName, 'Unknown Task') as TaskName, " &
                       "cl.CompletedDateTime, cl.Status, " &
@@ -204,6 +205,7 @@ Namespace Services
                       "LEFT JOIN Branches b ON cl.BranchID = b.BranchID " &
                       "LEFT JOIN Shifts s ON cl.ShiftID = s.ShiftID " &
                       "LEFT JOIN Tasks t ON cl.TaskID = t.TaskID " &
+                      "LEFT JOIN Staff staff ON cl.UserID = staff.UserID " &
                       "WHERE 1=1"
 
             Dim parameters As New List(Of SqlParameter)
@@ -245,6 +247,7 @@ Namespace Services
                             entries.Add(New ChoreLogEntry With {
                                 .LogID = reader.GetInt32("LogID"),
                                 .UserID = reader.GetString("UserID"),
+                                .StaffName = reader.GetString("StaffName"),
                                 .BranchID = reader.GetInt32("BranchID"),
                                 .BranchName = reader.GetString("BranchName"),
                                 .ShiftID = reader.GetInt32("ShiftID"),

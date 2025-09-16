@@ -353,14 +353,46 @@ Namespace Forms
 
         Private Sub buttonExportData_Click(sender As Object, e As EventArgs) Handles buttonExportData.Click
             Try
-                ' Simple export functionality - can be enhanced later
-                MessageBox.Show("Export functionality will be implemented in a future version.",
-                              "Feature Coming Soon",
-                              MessageBoxButtons.OK,
-                              MessageBoxIcon.Information)
+                If dataGridViewResults.DataSource Is Nothing OrElse dataGridViewResults.Rows.Count = 0 Then
+                    MessageBox.Show("No data to export. Please apply filters to load data first.",
+                           "No Data", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Return
+                End If
+
+                Dim exportService As New ExportService()
+                Dim currentData As List(Of ChoreLogEntry) = CType(dataGridViewResults.DataSource, List(Of ChoreLogEntry))
+
+                ' Show format selection dialog
+                Dim result As DialogResult = MessageBox.Show("Choose export format:" & vbCrLf & vbCrLf &
+                                                    "YES = PDF" & vbCrLf &
+                                                    "NO = Excel" & vbCrLf &
+                                                    "CANCEL = CSV",
+                                                    "Export Format",
+                                                    MessageBoxButtons.YesNoCancel,
+                                                    MessageBoxIcon.Question)
+
+                Dim fileName As String = $"TaskReport_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}"
+                Dim desktopPath As String = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+
+                Select Case result
+                    Case DialogResult.Yes ' PDF
+                        Dim pdfPath As String = Path.Combine(desktopPath, fileName & ".pdf")
+                        exportService.ExportToPDF(currentData, pdfPath)
+                        MessageBox.Show($"PDF exported successfully to:{vbCrLf}{pdfPath}", "Export Complete")
+
+                    Case DialogResult.No ' Excel
+                        Dim excelPath As String = Path.Combine(desktopPath, fileName & ".xlsx")
+                        exportService.ExportToExcel(currentData, excelPath)
+                        MessageBox.Show($"Excel file exported successfully to:{vbCrLf}{excelPath}", "Export Complete")
+
+                    Case DialogResult.Cancel ' CSV
+                        Dim csvPath As String = Path.Combine(desktopPath, fileName & ".csv")
+                        exportService.ExportToCSV(currentData, csvPath)
+                        MessageBox.Show($"CSV file exported successfully to:{vbCrLf}{csvPath}", "Export Complete")
+                End Select
+
             Catch ex As Exception
-                MessageBox.Show($"Export error: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show($"Export error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End Sub
 
@@ -412,5 +444,8 @@ Namespace Forms
             End Try
         End Sub
 
+        Private Sub labelReportsTitle_Click(sender As Object, e As EventArgs) Handles labelReportsTitle.Click
+
+        End Sub
     End Class
 End Namespace

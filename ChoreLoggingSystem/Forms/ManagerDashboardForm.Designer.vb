@@ -551,9 +551,9 @@
             labelReportsTitle.Font = New Font("Segoe UI", 15.75F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
             labelReportsTitle.Location = New Point(20, 20)
             labelReportsTitle.Name = "labelReportsTitle"
-            labelReportsTitle.Size = New Size(302, 30)
+            labelReportsTitle.Size = New Size(214, 30)
             labelReportsTitle.TabIndex = 0
-            labelReportsTitle.Text = "Reports & Analytics Dashboard"
+            labelReportsTitle.Text = "Analytics Dashboard"
             ' 
             ' ManagerDashboardForm
             ' 

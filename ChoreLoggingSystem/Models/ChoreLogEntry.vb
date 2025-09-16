@@ -2,6 +2,7 @@
     Public Class ChoreLogEntry
         Public Property LogID As Integer
         Public Property UserID As String           ' Changed from StaffInitials
+        Public Property StaffName As String
         Public Property AuthenticatedStaffID As Integer
         Public Property BranchID As Integer
         Public Property BranchName As String

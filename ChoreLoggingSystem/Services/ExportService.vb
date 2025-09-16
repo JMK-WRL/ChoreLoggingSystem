@@ -1,146 +1,125 @@
 ﻿Imports System.IO
 Imports System.Text
 Imports ChoreLoggingSystem.Models
-Imports iTextSharp.text
-Imports iTextSharp.text.pdf
-Imports OfficeOpenXml
-Imports CsvHelper
 
 Namespace Services
     Public Class ExportService
 
         Public Sub ExportToPDF(data As List(Of ChoreLogEntry), filePath As String)
-            Using document As New Document(PageSize.A4.Rotate())
-                Using writer As PdfWriter = PdfWriter.GetInstance(document, New FileStream(filePath, FileMode.Create))
-                    document.Open()
+            ' Create a text-based "PDF" report (HTML format that can be printed to PDF)
+            Try
+                Dim html As New StringBuilder()
+                html.AppendLine("<!DOCTYPE html>")
+                html.AppendLine("<html>")
+                html.AppendLine("<head>")
+                html.AppendLine("<title>Task Completion Report</title>")
+                html.AppendLine("<style>")
+                html.AppendLine("body { font-family: Arial, sans-serif; margin: 20px; }")
+                html.AppendLine("h1 { text-align: center; color: #003366; }")
+                html.AppendLine("h2 { text-align: center; color: #666; }")
+                html.AppendLine("table { width: 100%; border-collapse: collapse; margin-top: 20px; }")
+                html.AppendLine("th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }")
+                html.AppendLine("th { background-color: #f2f2f2; font-weight: bold; }")
+                html.AppendLine("tr:nth-child(even) { background-color: #f9f9f9; }")
+                html.AppendLine(".date { font-size: 12px; color: #666; text-align: center; margin: 10px; }")
+                html.AppendLine("</style>")
+                html.AppendLine("</head>")
+                html.AppendLine("<body>")
 
-                    ' Company Header
-                    AddCompanyHeader(document)
+                html.AppendLine("<h1>EXCELLENCE CARE SOLUTIONS</h1>")
+                html.AppendLine("<h2>Professional Task Management System</h2>")
+                html.AppendLine("<div class='date'>Generated: " & DateTime.Now.ToString("MM/dd/yyyy HH:mm") & "</div>")
+                html.AppendLine("<h2>Task Completion Report</h2>")
 
-                    ' Add title
-                    Dim title As New Paragraph("Task Completion Report", New Font(Font.FontFamily.HELVETICA, 16, Font.BOLD))
-                    title.Alignment = Element.ALIGN_CENTER
-                    title.SpacingAfter = 20
-                    document.Add(title)
+                html.AppendLine("<table>")
+                html.AppendLine("<tr>")
+                html.AppendLine("<th>Staff Name</th>")
+                html.AppendLine("<th>Branch Name</th>")
+                html.AppendLine("<th>Shift Name</th>")
+                html.AppendLine("<th>Task Name</th>")
+                html.AppendLine("<th>Completed Date</th>")
+                html.AppendLine("<th>Notes</th>")
+                html.AppendLine("</tr>")
 
-                    ' Create table
-                    Dim table As New PdfPTable(6)
-                    table.WidthPercentage = 100
-                    table.SetWidths({3, 3, 2, 4, 2, 4})
+                For Each entry In data
+                    html.AppendLine("<tr>")
+                    html.AppendLine("<td>" & entry.StaffName & "</td>")
+                    html.AppendLine("<td>" & entry.BranchName & "</td>")
+                    html.AppendLine("<td>" & entry.ShiftName & "</td>")
+                    html.AppendLine("<td>" & entry.TaskName & "</td>")
+                    html.AppendLine("<td>" & entry.CompletedDateTime.ToString("MM/dd/yyyy HH:mm") & "</td>")
+                    html.AppendLine("<td>" & If(String.IsNullOrEmpty(entry.Notes), "", entry.Notes) & "</td>")
+                    html.AppendLine("</tr>")
+                Next
 
-                    ' Add headers
-                    AddTableHeader(table, "Staff Name")
-                    AddTableHeader(table, "Branch Name")
-                    AddTableHeader(table, "Shift Name")
-                    AddTableHeader(table, "Task Name")
-                    AddTableHeader(table, "Completed Date")
-                    AddTableHeader(table, "Notes")
+                html.AppendLine("</table>")
+                html.AppendLine("</body>")
+                html.AppendLine("</html>")
 
-                    ' Add data
-                    For Each entry In data
-                        table.AddCell(New PdfPCell(New Phrase(entry.StaffName)))
-                        table.AddCell(New PdfPCell(New Phrase(entry.BranchName)))
-                        table.AddCell(New PdfPCell(New Phrase(entry.ShiftName)))
-                        table.AddCell(New PdfPCell(New Phrase(entry.TaskName)))
-                        table.AddCell(New PdfPCell(New Phrase(entry.CompletedDateTime.ToString("MM/dd/yyyy"))))
-                        table.AddCell(New PdfPCell(New Phrase(entry.Notes)))
-                    Next
+                File.WriteAllText(filePath, html.ToString(), Encoding.UTF8)
 
-                    document.Add(table)
-                    document.Close()
-                End Using
-            End Using
+            Catch ex As Exception
+                Throw New Exception("HTML Report Export Error: " & ex.Message, ex)
+            End Try
         End Sub
 
         Public Sub ExportToExcel(data As List(Of ChoreLogEntry), filePath As String)
-            Using package As New ExcelPackage()
-                Dim worksheet = package.Workbook.Worksheets.Add("Task Report")
+            ' Create CSV format that Excel can open
+            Try
+                Dim csv As New StringBuilder()
 
-                ' Company Header
-                worksheet.Cells("A1").Value = "EXCELLENCE CARE SOLUTIONS"
-                worksheet.Cells("A1:F1").Merge = True
-                worksheet.Cells("A1").Style.Font.Bold = True
-                worksheet.Cells("A1").Style.Font.Size = 16
-                worksheet.Cells("A1").Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center
+                ' Add header information
+                csv.AppendLine("EXCELLENCE CARE SOLUTIONS")
+                csv.AppendLine("Task Completion Report")
+                csv.AppendLine("Generated: " & DateTime.Now.ToString("MM/dd/yyyy HH:mm"))
+                csv.AppendLine() ' Empty line
 
-                worksheet.Cells("A2").Value = "Task Completion Report"
-                worksheet.Cells("A2:F2").Merge = True
-                worksheet.Cells("A2").Style.Font.Bold = True
-                worksheet.Cells("A2").Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center
+                ' Column headers
+                csv.AppendLine("Staff Name,Branch Name,Shift Name,Task Name,Completed Date,Notes")
 
-                ' Headers
-                Dim headers() As String = {"Staff Name", "Branch Name", "Shift Name", "Task Name", "Completed Date", "Notes"}
-                For i As Integer = 0 To headers.Length - 1
-                    worksheet.Cells(4, i + 1).Value = headers(i)
-                    worksheet.Cells(4, i + 1).Style.Font.Bold = True
-                Next
-
-                ' Data
-                Dim row As Integer = 5
+                ' Data rows
                 For Each entry In data
-                    worksheet.Cells(row, 1).Value = entry.StaffName
-                    worksheet.Cells(row, 2).Value = entry.BranchName
-                    worksheet.Cells(row, 3).Value = entry.ShiftName
-                    worksheet.Cells(row, 4).Value = entry.TaskName
-                    worksheet.Cells(row, 5).Value = entry.CompletedDateTime.ToString("MM/dd/yyyy")
-                    worksheet.Cells(row, 6).Value = entry.Notes
-                    row += 1
+                    Dim notes As String = If(String.IsNullOrEmpty(entry.Notes), "", entry.Notes.Replace(",", ";").Replace(Chr(13), " ").Replace(Chr(10), " "))
+                    csv.AppendLine(String.Format("""{0}"",""{1}"",""{2}"",""{3}"",""{4}"",""{5}""",
+                        entry.StaffName,
+                        entry.BranchName,
+                        entry.ShiftName,
+                        entry.TaskName,
+                        entry.CompletedDateTime.ToString("MM/dd/yyyy HH:mm"),
+                        notes))
                 Next
 
-                ' Auto-fit columns
-                worksheet.Cells.AutoFitColumns()
+                File.WriteAllText(filePath, csv.ToString(), Encoding.UTF8)
 
-                ' Save
-                package.SaveAs(New FileInfo(filePath))
-            End Using
+            Catch ex As Exception
+                Throw New Exception("Excel Export Error: " & ex.Message, ex)
+            End Try
         End Sub
 
         Public Sub ExportToCSV(data As List(Of ChoreLogEntry), filePath As String)
-            Using writer As New StreamWriter(filePath, False, Encoding.UTF8)
-                Using csv As New CsvWriter(writer, Globalization.CultureInfo.InvariantCulture)
-                    ' Write headers
-                    csv.WriteField("Staff Name")
-                    csv.WriteField("Branch Name")
-                    csv.WriteField("Shift Name")
-                    csv.WriteField("Task Name")
-                    csv.WriteField("Completed Date")
-                    csv.WriteField("Notes")
-                    csv.NextRecord()
+            Try
+                Dim csv As New StringBuilder()
 
-                    ' Write data
-                    For Each entry In data
-                        csv.WriteField(entry.StaffName)
-                        csv.WriteField(entry.BranchName)
-                        csv.WriteField(entry.ShiftName)
-                        csv.WriteField(entry.TaskName)
-                        csv.WriteField(entry.CompletedDateTime.ToString("MM/dd/yyyy"))
-                        csv.WriteField(entry.Notes)
-                        csv.NextRecord()
-                    Next
-                End Using
-            End Using
-        End Sub
+                ' Column headers
+                csv.AppendLine("Staff Name,Branch Name,Shift Name,Task Name,Completed Date,Notes")
 
-        Private Sub AddCompanyHeader(document As Document)
-            Dim headerTable As New PdfPTable(1)
-            headerTable.WidthPercentage = 100
+                ' Data rows
+                For Each entry In data
+                    Dim notes As String = If(String.IsNullOrEmpty(entry.Notes), "", entry.Notes.Replace(",", ";").Replace(Chr(13), " ").Replace(Chr(10), " "))
+                    csv.AppendLine(String.Format("""{0}"",""{1}"",""{2}"",""{3}"",""{4}"",""{5}""",
+                        entry.StaffName,
+                        entry.BranchName,
+                        entry.ShiftName,
+                        entry.TaskName,
+                        entry.CompletedDateTime.ToString("MM/dd/yyyy HH:mm"),
+                        notes))
+                Next
 
-            Dim companyName As New Paragraph("EXCELLENCE CARE SOLUTIONS", New Font(Font.FontFamily.HELVETICA, 18, Font.BOLD))
-            companyName.Alignment = Element.ALIGN_CENTER
+                File.WriteAllText(filePath, csv.ToString(), Encoding.UTF8)
 
-            Dim subtitle As New Paragraph("Professional Task Management System", New Font(Font.FontFamily.HELVETICA, 12, Font.ITALIC))
-            subtitle.Alignment = Element.ALIGN_CENTER
-
-            document.Add(companyName)
-            document.Add(subtitle)
-            document.Add(New Paragraph(" ")) ' Space
-        End Sub
-
-        Private Sub AddTableHeader(table As PdfPTable, text As String)
-            Dim cell As New PdfPCell(New Phrase(text, New Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)))
-            cell.BackgroundColor = BaseColor.LIGHT_GRAY
-            cell.HorizontalAlignment = Element.ALIGN_CENTER
-            table.AddCell(cell)
+            Catch ex As Exception
+                Throw New Exception("CSV Export Error: " & ex.Message, ex)
+            End Try
         End Sub
 
     End Class

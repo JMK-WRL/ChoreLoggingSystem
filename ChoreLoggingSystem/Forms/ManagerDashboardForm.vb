@@ -260,17 +260,17 @@ Namespace Forms
                 End If
 
                 ' DEBUG: Show what parameters we're using
-                MessageBox.Show($"Parameters:" & vbCrLf &
-                       $"From: {fromDate.ToShortDateString()}" & vbCrLf &
-                       $"To: {toDate.ToShortDateString()}" & vbCrLf &
-                       $"Branch: {branchId}" & vbCrLf &
-                       $"Shift: {shiftId}" & vbCrLf &
-                       $"Staff: {staffInitials}", "Debug - Filter Parameters")
+                'MessageBox.Show($"Parameters:" & vbCrLf &
+                '$"From: {fromDate.ToShortDateString()}" & vbCrLf &
+                '$"To: {toDate.ToShortDateString()}" & vbCrLf &
+                '$"Branch: {branchId}" & vbCrLf &
+                '$"Shift: {shiftId}" & vbCrLf &
+                ' $"Staff: {staffInitials}", "Debug - Filter Parameters")
 
                 Dim entries As List(Of ChoreLogEntry) = _databaseService.GetChoreLogEntries(fromDate, toDate, branchId, shiftId, staffInitials)
 
                 ' DEBUG: Show how many records we got
-                MessageBox.Show($"Records returned from database: {entries.Count}", "Debug - Data Count")
+                'MessageBox.Show($"Records returned from database: {entries.Count}", "Debug - Data Count")
 
 
                 dataGridViewResults.DataSource = entries
@@ -355,7 +355,7 @@ Namespace Forms
             Try
                 If dataGridViewResults.DataSource Is Nothing OrElse dataGridViewResults.Rows.Count = 0 Then
                     MessageBox.Show("No data to export. Please apply filters to load data first.",
-                           "No Data", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                   "No Data", MessageBoxButtons.OK, MessageBoxIcon.Information)
                     Return
                 End If
 
@@ -364,35 +364,46 @@ Namespace Forms
 
                 ' Show format selection dialog
                 Dim result As DialogResult = MessageBox.Show("Choose export format:" & vbCrLf & vbCrLf &
-                                                    "YES = PDF" & vbCrLf &
-                                                    "NO = Excel" & vbCrLf &
-                                                    "CANCEL = CSV",
-                                                    "Export Format",
-                                                    MessageBoxButtons.YesNoCancel,
-                                                    MessageBoxIcon.Question)
+                                            "YES = HTML Report (can be printed to PDF)" & vbCrLf &
+                                            "NO = Excel CSV" & vbCrLf &
+                                            "CANCEL = Standard CSV",
+                                            "Export Format",
+                                            MessageBoxButtons.YesNoCancel,
+                                            MessageBoxIcon.Question)
 
-                Dim fileName As String = $"TaskReport_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}"
+                Dim fileName As String = "TaskReport_" & DateTime.Now.ToString("yyyyMMdd_HHmmss")
                 Dim desktopPath As String = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
 
                 Select Case result
-                    Case DialogResult.Yes ' PDF
-                        Dim pdfPath As String = Path.Combine(desktopPath, fileName & ".pdf")
-                        exportService.ExportToPDF(currentData, pdfPath)
-                        MessageBox.Show($"PDF exported successfully to:{vbCrLf}{pdfPath}", "Export Complete")
+                    Case DialogResult.Yes ' HTML Report
+                        Dim htmlPath As String = System.IO.Path.Combine(desktopPath, fileName & ".html")
+                        exportService.ExportToPDF(currentData, htmlPath)
+                        MessageBox.Show("HTML report exported successfully to:" & vbCrLf & htmlPath & vbCrLf & vbCrLf &
+                               "You can open this file in your web browser and print to PDF if needed.",
+                               "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-                    Case DialogResult.No ' Excel
-                        Dim excelPath As String = Path.Combine(desktopPath, fileName & ".xlsx")
+                    Case DialogResult.No ' Excel CSV
+                        Dim excelPath As String = System.IO.Path.Combine(desktopPath, fileName & ".csv")
                         exportService.ExportToExcel(currentData, excelPath)
-                        MessageBox.Show($"Excel file exported successfully to:{vbCrLf}{excelPath}", "Export Complete")
+                        MessageBox.Show("Excel-compatible CSV file exported successfully to:" & vbCrLf & excelPath & vbCrLf & vbCrLf &
+                               "You can open this file directly in Microsoft Excel.",
+                               "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-                    Case DialogResult.Cancel ' CSV
-                        Dim csvPath As String = Path.Combine(desktopPath, fileName & ".csv")
+                    Case DialogResult.Cancel ' Standard CSV
+                        Dim csvPath As String = System.IO.Path.Combine(desktopPath, fileName & ".csv")
                         exportService.ExportToCSV(currentData, csvPath)
-                        MessageBox.Show($"CSV file exported successfully to:{vbCrLf}{csvPath}", "Export Complete")
+                        MessageBox.Show("CSV file exported successfully to:" & vbCrLf & csvPath,
+                               "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 End Select
 
+                ' Optionally open the folder where the file was saved
+                If MessageBox.Show("Would you like to open the folder where the file was saved?",
+                          "Open Folder?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
+                    Process.Start("explorer.exe", desktopPath)
+                End If
+
             Catch ex As Exception
-                MessageBox.Show($"Export error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show("Export error: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End Sub
 
